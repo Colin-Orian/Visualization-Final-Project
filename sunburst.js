@@ -27,7 +27,17 @@ function makeSunburst(data){
             .style("font", "10px sans-serif")
             .attr("class", "sunburst-background")
             
-            
+    button = sunburstContainer.append('g')
+    
+    button.append('rect')
+          .attr("x", 350)
+          .attr("y", 40)
+          .attr("width", 100)
+          .attr("height", 40)
+          .attr("stroke", "black")
+          .attr("fill", "cyan")
+          .style("cursor", "pointer")
+          .on("click", filterData);
     
 
     const path = sunburstContainer.append('g')
@@ -84,6 +94,7 @@ function makeSunburst(data){
         tooltip.text("")
         
     }
+    currentRoot = root
     function clicked(event, p) {
         //console.log(dynamicContainer)
 
@@ -96,7 +107,7 @@ function makeSunburst(data){
         });
 
         const t = sunburstContainer.transition().duration(event.altKey ? 7500 : 750)
-
+        currentRoot = p
         sunBurstTitle.text(p.id);
         
         path.transition(t)
@@ -114,9 +125,13 @@ function makeSunburst(data){
             .attrTween("d", d => () => arc(d.current));
     }
                     
-                
+           
 }
 
+
+function buttonClick(){
+    
+} 
 
 // Handle zoom on click.
 

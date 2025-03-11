@@ -23,3 +23,8 @@ function readHierachy(fileName){
     return result
     
 }
+
+function readOpenAlex(fileName){
+    const data = d3.json(fileName)
+    return data
+}
