@@ -1,3 +1,178 @@
-.sunburst-background{
-    color: darkcyan;
+
+#lineGraphContainer{
+    left: 910px;
+    top: 410px;
+    position: absolute;
+    height: 300;
+    border: 2px;
+    background-color: #e4eff0;
+    border-color: black;
+    border-style: solid;
+    box-shadow: 4px 4px 4px #002439;
+    border-radius: 5px;
+}
+
+#body{
+    background-color: lightblue;
+}
+
+div#listContainer{
+    position: absolute;
+    left: 1310px;
+    top: 0px;
+    height: 400px;
+    border:2px;
+    background-color: #e4eff0;
+    border-color: black;
+    border-style: solid;
+    box-shadow: 4px 4px 4px #002439;
+    border-radius: 5px;
+    
+}
+
+#filterContainer{
+    position: absolute;
+    left: 0;   
+    top: 0;
+    height: 1400;
+    width: 950;
+    background-color: #e4eff0;
+    border: 2px solid black;
+    box-shadow: 4px 4px 4px #002439;
+    border-radius: 5px;
+    
+    
+}
+
+h3{
+    padding-left: 10px;
+    
+    color: black;
+}
+#StatisticsContainer{
+    position: absolute;
+    top: 0px;
+    left: 910px;
+    width: 390px;
+    height: 400px;
+    border: 2px solid black;
+    box-shadow: 4px 4px 4px #002439;
+    border-radius: 5px;
+    background-color: #e4eff0;
+}
+
+.headerWrapper{
+    padding-top: 9px;
+    background-color: cadetblue;
+    box-shadow: 0 4px 2px -2px #002439;
+}
+
+ul{
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 500px;
+    height: 300px;
+    max-height: 300px;
+    margin: 0px, 0px, 0px, 0px;
+    background-color: #e4eff0;
+    list-style-type:none;
+    padding: 4px;
+    
+}
+
+li{
+    border: 1px solid black;
+    box-shadow: 5px 5px 5px;
+    border-radius: 10px;
+    background-color: azure;
+    margin-left: 0px;
+}
+
+/*https://stackoverflow.com/questions/19254411/how-do-i-set-vertical-space-between-list-items*/
+li + li{
+    margin-top: 10px;
+}
+
+.articleWrapper{
+    display: flex;
+    
+}
+
+.articleTitle{
+    /*display: inline-block;*/
+    position: relative;
+    font-weight: bolder;
+    
+}
+
+.yearInfo{
+    /*display: inline-block;*/
+    position:relative;
+    font-style: italic;
+}
+
+.score{
+    
+    /*display: inline-block;*/
+    font-weight: bolder;
+    outline: 1px navy;
+    background: lightblue;
+    box-sizing: border-box;
+    border-radius: 10px;
+    box-shadow: 0px 0px 0px;
+    border: 5px red;
+    min-width: 40px;
+    min-height: 40px;
+    max-width: 40px;
+    
+    text-align: center;
+    
+}
+
+
+
+.modal{
+    position: fixed;
+    z-index: 1;
+    left: 0px;
+    top: 0;
+    padding-top: 100px;
+    display: none;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(0, 0, 0);
+    background-color: rgb(0, 0, 0, 0.4);
+    opacity: 0;
+}
+
+#modalContent{
+    position: relative;
+    margin: auto;
+    color: black;
+    
+    width: 80%;
+}
+
+#modalHeader{
+    font-size: large;
+    font-style: bold;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+
+    padding: 2px 16px;
+    background-color: cadetblue;
+}
+#modalBody{
+    background-color: azure;
+    border: 1px;
+    padding: 2px 16px;
+    border-color: lightblue;
+}
+#modalFooter{
+    background-color: cadetblue;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+#closeButton{
+    float: right;
 }

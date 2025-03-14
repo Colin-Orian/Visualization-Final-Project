@@ -1,13 +1,17 @@
-
-
-const width = 3000;
-const height = 1500;
+const width = 900;
+const height = 810;
 startYearGlobal = null
 endYearGlobal = null
 
 const svg = d3.create("svg")
+    
     .attr("width", width)
     .attr("height", height);
+
+const lineGraphSvg = d3.create("svg")
+        .attr("width", 900)
+        .attr("height", 400)
+        .attr("class", "linegraphsvg")
 
 currentRoot = null
 filterData = null
@@ -50,7 +54,8 @@ data.then((d) => {
             })
             currentData = topicFilter
             updateTimeGraph(startYearGlobal, endYearGlobal)
-            console.log(currentData)
+            updateScrollable(currentData)
+            
         }
         
         makeSunburst(d)
@@ -58,7 +63,7 @@ data.then((d) => {
 
         makeTimelineBar(startYearGlobal, endYearGlobal)
         makeTimelineGraph(startYearGlobal, endYearGlobal)
-
+        makeScrollable(currentData)
         
     }
     )
@@ -67,4 +72,5 @@ data.then((d) => {
 
 
 
-container.append(svg.node());
+filterContainer.append(svg.node());
+lineGraphContainer.append(lineGraphSvg.node())

@@ -1,5 +1,5 @@
 function makeSunburst(data){
-    const sunburstWidth = 932
+    const sunburstWidth = 700
     const sunburstHeight = sunburstWidth
     const radius = sunburstWidth / 12
     //const radius = 100  / 2
@@ -41,7 +41,7 @@ function makeSunburst(data){
     
 
     const path = sunburstContainer.append('g')
-            .attr('transform', ('translate( 400, 485)'))
+            .attr('transform', ('translate( 300, 485)'))
             .selectAll("path")
             .data(root.descendants().slice(1))
             .join("path")
@@ -58,7 +58,7 @@ function makeSunburst(data){
             .on("click", clicked);
       
     const dynamicContainer = sunburstContainer.append("circle")
-                    .attr('transform', ('translate( 400, 485)'))
+                    .attr('transform', ('translate( 300, 485)'))
                     .datum(root)
                     .attr("r", radius)
                     .attr("fill", "none")
@@ -69,14 +69,14 @@ function makeSunburst(data){
           
 
     const tooltip = sunburstContainer.append('text')
-                    .attr('transform', ('translate( 400, 485)'))
+                    .attr('transform', ('translate( 300, 485)'))
                     .attr("class", "tooltip")
                     .attr("fill", "black")
                     .style("pointer-events", "none")
                     .style("font-size", "20px");
 
     sunBurstTitle = sunburstContainer.append("text")
-                    .attr('transform', ('translate( 350, 485)'))
+                    .attr('transform', ('translate( 250, 485)'))
                     .style("font-size", "20px")
                     .text("All Topics")
     

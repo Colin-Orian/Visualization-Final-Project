@@ -11,7 +11,7 @@ function makeTimelineBar(startYear, endYear){
     }
     const timeScale = d3.scaleQuantize([timeLineLeftCoord, timeLineRightCoord], outputRange)
     const timelineBar = svg.append("g")
-        timelineBar.attr('transform', ('translate( 0, 890)'))
+        timelineBar.attr('transform', ('translate( 0, 100)'))
                    .attr("id", "Timeline Bar")
         timelineBar.append("rect")
                    .attr("x", timeLineLeftCoord)
@@ -129,9 +129,10 @@ function makeTimelineGraph(startYear, endYear){
 
    
     
-    const timelineGraph = svg.append("g")
-    timelineGraph.attr('transform', ('translate( 0, 1000)'))
-                   .attr("id", "TimelineGraph")
+    const timelineGraph = lineGraphSvg.append("g");
+
+    timelineGraph.attr('transform', ('translate( 0, 10)'))
+    timelineGraph.attr("id", "TimelineGraph")
 
     
     xAxis = timelineGraph.append("line")
