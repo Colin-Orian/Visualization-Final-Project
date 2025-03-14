@@ -1,5 +1,5 @@
-const width = 900;
-const height = 810;
+const width = 850;
+const height = 750;
 startYearGlobal = null
 endYearGlobal = null
 
@@ -10,7 +10,7 @@ const svg = d3.create("svg")
 
 const lineGraphSvg = d3.create("svg")
         .attr("width", 900)
-        .attr("height", 400)
+        .attr("height", 390)
         .attr("class", "linegraphsvg")
 
 currentRoot = null
@@ -55,6 +55,7 @@ data.then((d) => {
             currentData = topicFilter
             updateTimeGraph(startYearGlobal, endYearGlobal)
             updateScrollable(currentData)
+            updateOverview(currentData)
             
         }
         
@@ -64,6 +65,7 @@ data.then((d) => {
         makeTimelineBar(startYearGlobal, endYearGlobal)
         makeTimelineGraph(startYearGlobal, endYearGlobal)
         makeScrollable(currentData)
+        makeOverview(currentData)
         
     }
     )

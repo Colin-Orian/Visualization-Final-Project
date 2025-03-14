@@ -27,21 +27,8 @@ function makeSunburst(data){
             .style("font", "10px sans-serif")
             .attr("class", "sunburst-background")
             
-    button = sunburstContainer.append('g')
-    
-    button.append('rect')
-          .attr("x", 350)
-          .attr("y", 40)
-          .attr("width", 100)
-          .attr("height", 40)
-          .attr("stroke", "black")
-          .attr("fill", "cyan")
-          .style("cursor", "pointer")
-          .on("click", filterData);
-    
-
     const path = sunburstContainer.append('g')
-            .attr('transform', ('translate( 300, 485)'))
+            .attr('transform', ('translate( 400, 400)'))
             .selectAll("path")
             .data(root.descendants().slice(1))
             .join("path")
@@ -58,7 +45,7 @@ function makeSunburst(data){
             .on("click", clicked);
       
     const dynamicContainer = sunburstContainer.append("circle")
-                    .attr('transform', ('translate( 300, 485)'))
+                    .attr('transform', ('translate( 400, 400)'))
                     .datum(root)
                     .attr("r", radius)
                     .attr("fill", "none")
@@ -69,21 +56,25 @@ function makeSunburst(data){
           
 
     const tooltip = sunburstContainer.append('text')
-                    .attr('transform', ('translate( 300, 485)'))
+                    .attr('transform', ('translate( 400, 400)'))
                     .attr("class", "tooltip")
                     .attr("fill", "black")
                     .style("pointer-events", "none")
+                    .style("text-anchor", "middle")
                     .style("font-size", "20px");
 
     sunBurstTitle = sunburstContainer.append("text")
-                    .attr('transform', ('translate( 250, 485)'))
+                    .attr('transform', ('translate( 400, 400)'))
+                    .attr("id", "sunburstTitle")
                     .style("font-size", "20px")
+                    .style("display", "none")
                     .text("All Topics")
     
     function mouseMove(event, p){
         // https://observablehq.com/@john-guerra/how-to-add-a-tooltip-in-d3
         
         const [mx, my] = d3.pointer(event)
+        
         tooltip
             .attr('x', mx)
             .attr('y', my)
@@ -123,6 +114,9 @@ function makeSunburst(data){
             .attr("pointer-events", d => arcVisible(d.target) ? "auto": "none")
 
             .attrTween("d", d => () => arc(d.current));
+
+
+            filterData()
     }
                     
            

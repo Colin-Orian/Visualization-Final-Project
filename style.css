@@ -1,9 +1,9 @@
 
 #lineGraphContainer{
-    left: 910px;
-    top: 410px;
+    left: 860px;
+    top: 360px;
     position: absolute;
-    height: 300;
+    height: 350;
     border: 2px;
     background-color: #e4eff0;
     border-color: black;
@@ -18,9 +18,9 @@
 
 div#listContainer{
     position: absolute;
-    left: 1310px;
+    left: 1260px;
     top: 0px;
-    height: 400px;
+    height: 350px;
     border:2px;
     background-color: #e4eff0;
     border-color: black;
@@ -34,8 +34,8 @@ div#listContainer{
     position: absolute;
     left: 0;   
     top: 0;
-    height: 1400;
-    width: 950;
+    height: 1000;
+    width: 900;
     background-color: #e4eff0;
     border: 2px solid black;
     box-shadow: 4px 4px 4px #002439;
@@ -52,9 +52,10 @@ h3{
 #StatisticsContainer{
     position: absolute;
     top: 0px;
-    left: 910px;
+    left: 860px;
+    
     width: 390px;
-    height: 400px;
+    height: 350px;
     border: 2px solid black;
     box-shadow: 4px 4px 4px #002439;
     border-radius: 5px;
@@ -71,8 +72,8 @@ ul{
     overflow-y: auto;
     overflow-x: hidden;
     width: 500px;
-    height: 300px;
-    max-height: 300px;
+    height: 350px;
+    max-height: 250px;
     margin: 0px, 0px, 0px, 0px;
     background-color: #e4eff0;
     list-style-type:none;

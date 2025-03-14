@@ -11,7 +11,7 @@ function makeTimelineBar(startYear, endYear){
     }
     const timeScale = d3.scaleQuantize([timeLineLeftCoord, timeLineRightCoord], outputRange)
     const timelineBar = svg.append("g")
-        timelineBar.attr('transform', ('translate( 0, 100)'))
+        timelineBar.attr('transform', ('translate( 0, 0)'))
                    .attr("id", "Timeline Bar")
         timelineBar.append("rect")
                    .attr("x", timeLineLeftCoord)
@@ -113,7 +113,9 @@ function makeTimelineBar(startYear, endYear){
     }
     
     function dragended(event){
+        filterData()
         d3.select(this).attr("stroke", "none")
+        
     }
         
 }
