@@ -20,7 +20,7 @@ function makeOverview(data){
         .text("Topic: ")
         .style("font-weight", "bold")
         .style("padding-right", "2px")
-    console.log(sunburstTitle)
+    
     topicName.append("div")
              .attr("id", "topicName")
              .style("float", "right")

@@ -1,6 +1,6 @@
 function makeScrollable(data){
     
-    console.log(data[0])
+    
     
     /*
     summaryListContainer.append("rect")
@@ -60,11 +60,11 @@ function makeScrollable(data){
 
 }
     function updateScrollable(currentData){
-
+        console.log(currentData[0])
         sortedData = currentData.toSorted(function(a, b){
             return b.cited_by_count - a.cited_by_count;
         });
-        console.log(sortedData.length)
+        
         publicationList.selectAll("li").remove()
         //publicationList.attr("height", 840)
         //publicationList.style("overflow", "auto")
@@ -76,24 +76,81 @@ function makeScrollable(data){
             let summaryWrapper = temp.append("div")
             let title = summaryWrapper.append("div")
             let year = summaryWrapper.append("div")
+            let buttonWrapper = summaryWrapper.append("div")
+            let moreInfoButton = buttonWrapper.append("img")
+            let tagWrapper = summaryWrapper.append("div")
+            
+            let seedButton = buttonWrapper.append("img")
+            seedButton.attr("src", "res/litReview.svg")
+            seedButton.style("cursor", "pointer")
 
-            entry.on("click", function(){
+            moreInfoButton.on("click", function(){
                 showMoreInfo(element)
             });
-            entry.style("cursor", "pointer");
+            
+            seedButton.on("click", function(){
+                setSeed(element)
+            })
+            
 
             number.attr("class", "score")        
             title.attr("class", "articleTitle")
             year.attr("class", "yearInfo")
+            buttonWrapper.attr("class", "buttonWrapper")
+            tagWrapper.attr("class", "tagWrapper")
+            moreInfoButton.attr("src", "res/MoreDetails.svg")
+            moreInfoButton.attr("class", "moreInfoButton")
             number.append("text").text(element.cited_by_count)
             title.append("text").text(element.title)
             year.append("text").text(element.publication_year)
+
+            //Taggging
+            surveyThreashold = 100
+            if(element.referenced_works.length >= surveyThreashold){
+                let surveyWrapper = tagWrapper.append("div")
+                let surveyButton = surveyWrapper.append("img")
+                
+                surveyWrapper.attr("class", "tag")
+                surveyButton.attr("src", "res/litReview.svg")
+                surveyWrapper.append("text").text("Litearture Survey")
+                   
+            }
+            if(element.counts_by_year.length > 0){
+                
+                let averageCited = 0
+                // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/entries
+                for(let  i = 0; i < element.counts_by_year.length; i ++){
+                    averageCited += element.counts_by_year[0].cited_by_count
+                }
+                averageCited = averageCited / element.counts_by_year.length
+                
+                if(Math.floor(averageCited) >= 10){
+                    let averageWrapper = tagWrapper.append("div")
+                    averageWrapper.attr("class", "tag")
+                   let average = averageWrapper.append("div")
+                   average.text("Cited Frequently")
+                }
+            }else{
+                let averageWrapper = tagWrapper.append("div")
+                averageWrapper.attr("class", "tag")
+                let average = averageWrapper.append("div")
+                average.text("Unnoted")
+            }
+
+            dateThreashold = 4
+            if((new Date().getFullYear() - element.publication_year) <= dateThreashold){
+                let novelWrapper = tagWrapper.append("div")
+                novelWrapper.attr("class", "tag")
+                let novel = novelWrapper.append("div")
+                novel.text("New Paper")
+            }
             
+
         });
     }
 
 function showMoreInfo(element){
-    console.log(element)
+    
     d3.select("#articleTitle").text(element.display_name)
 
     if(element.ab === undefined){
@@ -121,4 +178,9 @@ function closeMoreInfo(){
     d3.select(".modal").transition().style("opacity", 0.0)
     d3.select(".modal").style("display", "none")
 
+}
+
+function setSeed(article){
+    seedArticle = article
+    d3.select("#networkTitle").text(article.display_name)
 }

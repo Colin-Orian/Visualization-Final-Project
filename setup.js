@@ -13,10 +13,15 @@ const lineGraphSvg = d3.create("svg")
         .attr("height", 390)
         .attr("class", "linegraphsvg")
 
+const networkSvg = d3.create("div")
+            .attr("width", 900)
+            .attr("height", 390)
+            .attr("class", "networksvg")
 currentRoot = null
 filterData = null
 currentData = null
 currentLeaves = null
+seedArticle = null
 data = readHierachy("./data/hierachy.csv")
 
 data.then((d) => {
@@ -66,13 +71,51 @@ data.then((d) => {
         makeTimelineGraph(startYearGlobal, endYearGlobal)
         makeScrollable(currentData)
         makeOverview(currentData)
+        makeNetwork()
         
     }
     )
 })
 
 
+isTimeline = true
+d3.select("#timelineHeader").style("background-color", "lightblue")
+                            .on("click", toggleTimeline)
 
+d3.select("#networkHeader").style("cursor", "pointer")
+                           .on("click", toggleNetwork)
+networkSvg.style("display", "none")
 
 filterContainer.append(svg.node());
 lineGraphContainer.append(lineGraphSvg.node())
+lineGraphContainer.append(networkSvg.node())
+
+function toggleNetwork(){
+    if(isTimeline){
+        d3.select("#networkHeader").style("background-color", "lightblue")
+        d3.select("#networkHeader").style("cursor", "default")
+
+        d3.select("#timelineHeader").style("background-color", "cadetblue")
+        d3.select("#timelineHeader").style("cursor", "pointer")
+        isTimeline = false
+        lineGraphSvg.style("display", "none")
+        networkSvg.style("display", "initial")
+    }
+    
+}
+
+function toggleTimeline(){
+    if(!isTimeline){
+        d3.select("#timelineHeader").style("background-color", "lightblue")
+        d3.select("#timelineHeader").style("cursor", "default")
+
+        d3.select("#networkHeader").style("cursor", "pointer")
+        d3.select("#networkHeader").style("background-color", "cadetblue")
+        d3.select("#networkHeader").style("cursor", "pointer")
+        console.log("test")
+        lineGraphSvg.style("display", "initial")
+        networkSvg.style("display", "none")
+        isTimeline = true
+    }
+    
+}

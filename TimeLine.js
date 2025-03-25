@@ -124,8 +124,8 @@ function makeTimelineBar(startYear, endYear){
 
 function makeTimelineGraph(startYear, endYear){
 
-    timeLineLeftCoord = 20
-    timeLineRightCoord = 800
+    timeLineLeftCoord = 40
+    timeLineRightCoord = 820
     leftLoc = timeLineLeftCoord
     rightLoc = timeLineRightCoord
 
@@ -139,19 +139,42 @@ function makeTimelineGraph(startYear, endYear){
     
     xAxis = timelineGraph.append("line")
             .attr("x1", timeLineLeftCoord)
-            .attr("x2", timeLineRightCoord + 20)
-            .attr("y1", 300)
-            .attr("y2", 300)
+            .attr("x2", timeLineRightCoord + 60)
+            .attr("y1", 310)
+            .attr("y2", 310)
             .attr("stroke", "grey")
             .attr("stroke-width", 10)
     
     yAxis = timelineGraph.append("line")
             .attr("x1", timeLineLeftCoord+5)
             .attr("x2", timeLineLeftCoord+5)
-            .attr("y1", 300)
+            .attr("y1", 310)
             .attr("y2", 0)
             .attr("stroke", "grey")
             .attr("stroke-width", 10)
+
+
+    //Y labels
+    numLabels = 10
+    step = 300 / numLabels
+    yLabelLoc = []
+    for(i = 0; i <= numLabels; i ++){
+        //yPos = 300 - step * i
+        yPos = step * i
+        yLabelLoc.push(yPos)
+    }
+    timelineGraph.selectAll("#labelDashes")
+                 .data(yLabelLoc)
+                 .enter()
+                 .append("line")
+                 .attr("stroke", "darkgreen")
+                 .attr("stroke-width", 3)
+                 .attr("x1", timeLineLeftCoord-30)
+                 .attr("x2", timeLineLeftCoord)
+                 .attr("y1", d => d)
+                 .attr("y2", d => d)
+
+
     dynamicGraph = timelineGraph.append("g")
 
     updateTimeGraph(startYear, endYear)
@@ -159,8 +182,7 @@ function makeTimelineGraph(startYear, endYear){
 function updateTimeGraph(startYear, endYear){
     dynamicGraph.selectAll("*").remove()
     outputRange = []
-    console.log(startYear)
-    console.log(endYear)
+    
     for(i = startYear; i <= endYear; i ++){
         outputRange.push(i)
     }
@@ -171,7 +193,7 @@ function updateTimeGraph(startYear, endYear){
     outputIndex = -1
     lessDates = outputRange.filter(d => {
         outputIndex +=1
-        return (outputIndex % 7) === 0
+        return (outputIndex % 5) === 0
             
     })
 
@@ -207,24 +229,53 @@ function updateTimeGraph(startYear, endYear){
 
     const lineGraph = d3.path()
     lineGraphCount = 0
-    lineGraph.moveTo((lineGraphCount+5) * (timeLineRightCoord / outputRange.length), 300)
+    firstDate = outputRange[0]
+    firstCount = datesDict[firstDate]
+    if(firstCount === undefined){
+        firstY = 0
+    }else{
+        firstY = yScale(firstCount)
+    }
+    lineGraph.moveTo( (lineGraphCount+5) * (timeLineRightCoord / outputRange.length), (300 - firstY) - 0)
+    lineGraphCount += 1
 
-    for(i = 0; i < outputRange.length; i ++){
+    for(i = 1; i < outputRange.length; i ++){
         date = outputRange[i]
         count = datesDict[date]
         if(count === undefined){
             y = 0
+            
         }else{
             
             y = yScale(count)
             
         }
         
-        lineGraph.lineTo( (lineGraphCount+5) * (timeLineRightCoord / outputRange.length), (300 - y) - 6)
+        lineGraph.lineTo( (lineGraphCount+5) * (timeLineRightCoord / outputRange.length), (300 - y) - 0)
         lineGraphCount += 1
     }
 
+    labelScale = d3.scaleLinear([0, 300], [0, d3.max(Object.entries(datesDict).map(entry => entry[1]))])
+    //Y labels
+    numLabels = 10
+    step = 300 / numLabels
+    yLabelLoc = []
     
+    for(i = 0; i <= numLabels; i ++){
+        //yPos = 300 - step * i
+        yPos = step * i
+        yLabelLoc.push(yPos)
+        
+    }
+
+    dynamicGraph.selectAll("#countText")
+                .data(yLabelLoc)
+                .enter()
+                .append('text')
+                .text((d) => Math.trunc(labelScale(d)))
+                .attr("x", timeLineLeftCoord-30)
+                .attr("y", (d) => 300 - (d))
+
 
     dynamicGraph.append("path")
                 .style("stroke", "black")
