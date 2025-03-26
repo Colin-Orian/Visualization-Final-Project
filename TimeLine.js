@@ -1,6 +1,6 @@
 function makeTimelineBar(startYear, endYear){
-    timeLineLeftCoord = 20
-    timeLineRightCoord = 800
+    let timeLineLeftCoord = 20
+    let timeLineRightCoord = 800
     leftLoc = timeLineLeftCoord
     rightLoc = timeLineRightCoord
 
@@ -20,11 +20,7 @@ function makeTimelineBar(startYear, endYear){
                    .attr("height", 50)
                    .attr("fill", "lightblue");
 
-        
-        
-        const dragResult = d3.drag()
-
-        
+                
         startMargin = timelineBar.append("g");
         
 
@@ -76,7 +72,7 @@ function makeTimelineBar(startYear, endYear){
         const [mx, my] = d3.pointer(event)
         d3.select(this).attr("transform", () =>{
             if(this.id === "rightMargin"){  
-                if(mx < (timeLineRightCoord + 10) && mx >  leftLoc){
+                if(mx <= (timeLineRightCoord+10) && mx >  leftLoc){
                     rightLoc = mx
                     endYearGlobal = timeScale(mx)
                     endText.attr("x", mx)
@@ -86,14 +82,14 @@ function makeTimelineBar(startYear, endYear){
                     //  mx + ",0)")
                     
                 }else{
-                    rightLoc = (timeLineRightCoord + 10)
+                    rightLoc = (timeLineRightCoord)
                     endYearGlobal = timeScale(rightLoc)
                     endText.attr("x", rightLoc)
                            .text(timeScale(rightLoc))
-                    return "translate(" + (timeLineRightCoord + 10) + ",0)";
+                    return "translate(" + (timeLineRightCoord+10) + ",0)";
                 }    
             }else{
-                if(mx < rightLoc && mx >  timeLineLeftCoord){
+                if(mx < rightLoc && mx >=  timeLineLeftCoord){
                     leftLoc = mx
                     startYearGlobal = timeScale(mx)
                     startText.attr("x", mx)
@@ -104,6 +100,7 @@ function makeTimelineBar(startYear, endYear){
                     startText.attr("x", leftLoc)
                     startYearGlobal = timeScale(leftLoc)
                     startText.text(timeScale(leftLoc))
+                    console.log(timeLineLeftCoord)
                     return "translate(" + timeLineLeftCoord + ",0)";
                 }
             }
@@ -120,26 +117,21 @@ function makeTimelineBar(startYear, endYear){
         
 }
 
-
-
 function makeTimelineGraph(startYear, endYear){
 
-    timeLineLeftCoord = 40
-    timeLineRightCoord = 820
+    let timeLineLeftCoord = 40
+    let timeLineRightCoord = 820
     leftLoc = timeLineLeftCoord
     rightLoc = timeLineRightCoord
 
-   
-    
     const timelineGraph = lineGraphSvg.append("g");
 
-    timelineGraph.attr('transform', ('translate( 0, 10)'))
+    timelineGraph.attr('transform', ('translate( 0, 30)'))
     timelineGraph.attr("id", "TimelineGraph")
 
-    
     xAxis = timelineGraph.append("line")
             .attr("x1", timeLineLeftCoord)
-            .attr("x2", timeLineRightCoord + 60)
+            .attr("x2", timeLineRightCoord + timeLineLeftCoord)
             .attr("y1", 310)
             .attr("y2", 310)
             .attr("stroke", "grey")
@@ -180,6 +172,8 @@ function makeTimelineGraph(startYear, endYear){
     updateTimeGraph(startYear, endYear)
 }
 function updateTimeGraph(startYear, endYear){
+    let timeLineLeftCoord = 40
+    let timeLineRightCoord = 820
     dynamicGraph.selectAll("*").remove()
     outputRange = []
     
@@ -187,15 +181,39 @@ function updateTimeGraph(startYear, endYear){
         outputRange.push(i)
     }
 
-    const timeScale = d3.scaleQuantize([timeLineLeftCoord, timeLineRightCoord], outputRange)
-    
+    //const timeScale = d3.scaleQuantize([timeLineLeftCoord, timeLineRightCoord], outputRange)
+    const timeScale = d3.scaleLinear([startYear, endYear], [timeLineLeftCoord, timeLineRightCoord])
+
+    numDates = 10
     labelCount = 0
     outputIndex = -1
+    dateStep = Math.floor(outputRange.length / numDates)
+    console.log(dateStep)
+    lessDates = []
+    
+    if(dateStep === 0){
+        for(i = startYear; i <= endYear; i ++){
+            lessDates.push(i)
+        }
+    }else{
+        for(i = startYear; i <= endYear; i += dateStep){
+            if((i-startYear) % dateStep === 0){
+                console.log(i)
+                lessDates.push(i)
+            }
+            
+        }
+        
+    }
+    
+    /*
     lessDates = outputRange.filter(d => {
         outputIndex +=1
-        return (outputIndex % 5) === 0
+        return (outputIndex % numDates) === 0
             
-    })
+    })*/
+   //lessDates = []
+   
 
     labelDistance = (timeLineRightCoord) / lessDates.length  
 
@@ -206,9 +224,8 @@ function updateTimeGraph(startYear, endYear){
                     .append("text")
                     .attr("y", 350)
                     .attr("x", d => {
-                        result =  labelCount * labelDistance + timeLineLeftCoord
-                        labelCount += 1
-                        return result;
+                    
+                        return timeScale(d)
                     })
                     .text(d => d)
     
@@ -223,8 +240,8 @@ function updateTimeGraph(startYear, endYear){
             datesDict[element] = 1
         }
     });
-
-    const yScale = d3.scaleLinear([0, d3.max(Object.entries(datesDict).map(entry => entry[1]))], [50, 300])
+    maxEntry = d3.max(Object.entries(datesDict).map(entry => entry[1]))
+    const yScale = d3.scaleLinear([0, maxEntry], [0, 300])
     
 
     const lineGraph = d3.path()
@@ -236,7 +253,7 @@ function updateTimeGraph(startYear, endYear){
     }else{
         firstY = yScale(firstCount)
     }
-    lineGraph.moveTo( (lineGraphCount+5) * (timeLineRightCoord / outputRange.length), (300 - firstY) - 0)
+    lineGraph.moveTo( (lineGraphCount) * (timeLineRightCoord / outputRange.length) +timeLineLeftCoord +10, (300 - firstY) - 0)
     lineGraphCount += 1
 
     for(i = 1; i < outputRange.length; i ++){
@@ -251,14 +268,14 @@ function updateTimeGraph(startYear, endYear){
             
         }
         
-        lineGraph.lineTo( (lineGraphCount+5) * (timeLineRightCoord / outputRange.length), (300 - y) - 0)
+        lineGraph.lineTo( (lineGraphCount) * (timeLineRightCoord / outputRange.length) +timeLineLeftCoord +10, (300 - y) - 0)
         lineGraphCount += 1
     }
 
-    labelScale = d3.scaleLinear([0, 300], [0, d3.max(Object.entries(datesDict).map(entry => entry[1]))])
+    
     //Y labels
     numLabels = 10
-    step = 300 / numLabels
+    step = (maxEntry - 0) / numLabels 
     yLabelLoc = []
     
     for(i = 0; i <= numLabels; i ++){
@@ -267,14 +284,14 @@ function updateTimeGraph(startYear, endYear){
         yLabelLoc.push(yPos)
         
     }
-
+    
     dynamicGraph.selectAll("#countText")
                 .data(yLabelLoc)
                 .enter()
                 .append('text')
-                .text((d) => Math.trunc(labelScale(d)))
+                .text((d) => Math.trunc(d))
                 .attr("x", timeLineLeftCoord-30)
-                .attr("y", (d) => 300 - (d))
+                .attr("y", (d) => 300 - (yScale(d)))
 
 
     dynamicGraph.append("path")

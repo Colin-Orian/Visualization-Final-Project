@@ -51,17 +51,22 @@ function updateNetwork(data){
     
     if(seedArticle === null){
         alert("No seed selected")
-    }else{
+    }
+    else if(seedArticle.referenced_works.length === 0){
+        alert("No related works found")
+    }
+    else{
         
-        
+        link.selectAll("*").remove()
+        node.selectAll("*").remove()
+
         d3.select("#seedPrompt").style("display", "none")
         
         links = makeLinks(seedArticle.id, seedArticle.referenced_works, true)
         nodes = makeNodes(seedArticle.referenced_works.concat(seedArticle.id))
         //https://observablehq.com/@d3/force-directed-graph/2
-        
-        
-        
+        //links = makeLinks(seedArticle.id, seedArticle.related_works, true)
+        //nodes = makeNodes(seedArticle.related_works.concat(seedArticle.id))
         ids = data.map(d => d.id)
         
         
@@ -180,4 +185,5 @@ function makeNodes(nodes){
     return nodes.map((element) =>{ return {id: element}})
 
 }
+
 
