@@ -3,8 +3,8 @@ function makeSunburst(data){
     const sunburstHeight = sunburstWidth
     const radius = sunburstWidth / 12
     //const radius = 100  / 2
-    const color = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, data.children.length + 1))
-    
+    const color = d3.scaleOrdinal(d3.quantize(d3.interpolateSinebow, data.children.length + 1)) 
+    //const color = d3.scaleOrdinal(data.children, ["#EF476F", "#FFD166", "#06D6A0", "#118AB2"])
     data.sum((d) => d.paperCount)
     data.sort((a, b) => b.value - a.value);
     
@@ -33,7 +33,7 @@ function makeSunburst(data){
             .data(root.descendants().slice(1))
             .join("path")
                 .style("fill", d => {while (d.depth > 1) d = d.parent; return color(d.data.name);})
-                .attr("fill-opacity", d => arcVisible(d.current) ? (d.children ? 0.6 : 0.4) : 0)
+                .attr("fill-opacity", d => arcVisible(d.current) ? (d.children ? 1.0 : 0.8) : 0)
                 .attr("pointer-events", d => arcVisible(d.current) ? "auto": "none")
                 .attr("d", d => arc(d.current))
                 .attr("id", d => d.id)
@@ -110,7 +110,7 @@ function makeSunburst(data){
                 return +this.getAttribute("fill-opacity") || arcVisible(d.target);
             })
 
-            .attr("fill-opacity", d => arcVisible(d.target) ? (d.children ? 0.6 : 0.4) : 0)
+            .attr("fill-opacity", d => arcVisible(d.target) ? (d.children ? 1.0 : 0.8) : 0)
             .attr("pointer-events", d => arcVisible(d.target) ? "auto": "none")
 
             .attrTween("d", d => () => arc(d.current));

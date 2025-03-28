@@ -9,23 +9,26 @@ function makeNetwork(){
     
     const networkGraph = networkSvg.append("svg")
     networkGraph.attr("width", 900)
-    networkGraph.attr("height", 372)    
+    networkGraph.attr("height", 332)    
 
     
-    
-    networkToolbar.append("div")
-        .text("O")
+    let titleWrapper = networkToolbar.append("div")
+    titleWrapper.attr("class", "titleWrapper ")
+    titleWrapper.append("div").text("Seed Title").style("font-weight", "bold")
+    titleWrapper.append("div")
+        .attr("id", "networkTitle")
+        .style("fill", "black")
+        .text("No seed paper selected")
+
+    networkToolbar.append("button")
+        .text("Display Network")
         .attr("id", "networkButton")
         .style("fill", "black")
         .style('text-anchor', "middle")
         .on("click", () => {
             updateNetwork(currentData)
         })
-        .style("cursor", "pointer")
-
-    networkToolbar.append("div")
-        .attr("id", "networkTitle")
-        .style("fill", "black")
+        .style("cursor", "pointer")    
 
     networkGraph.attr('id', "networkGraph")
 

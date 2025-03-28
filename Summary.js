@@ -81,8 +81,9 @@ function makeScrollable(data){
             let tagWrapper = summaryWrapper.append("div")
             
             let seedButton = buttonWrapper.append("img")
-            seedButton.attr("src", "res/litReview.svg")
+            seedButton.attr("src", "res/seed.svg")
             seedButton.style("cursor", "pointer")
+            seedButton.attr("class", "button")
 
             moreInfoButton.on("click", function(){
                 showMoreInfo(element)
@@ -99,7 +100,7 @@ function makeScrollable(data){
             buttonWrapper.attr("class", "buttonWrapper")
             tagWrapper.attr("class", "tagWrapper")
             moreInfoButton.attr("src", "res/MoreDetails.svg")
-            moreInfoButton.attr("class", "moreInfoButton")
+            moreInfoButton.attr("class", "button")
             number.append("text").text(element.cited_by_count)
             title.append("text").text(element.title)
             year.append("text").text(element.publication_year)
@@ -112,7 +113,8 @@ function makeScrollable(data){
                 
                 surveyWrapper.attr("class", "tag")
                 surveyButton.attr("src", "res/litReview.svg")
-                surveyWrapper.append("text").text("Litearture Survey")
+                let survey = surveyWrapper.append("div")
+                survey.text("Litearture Survey")
                    
             }
             if(element.counts_by_year.length > 0){
@@ -127,12 +129,16 @@ function makeScrollable(data){
                 if(Math.floor(averageCited) >= 10){
                     let averageWrapper = tagWrapper.append("div")
                     averageWrapper.attr("class", "tag")
+                    let averageButton = averageWrapper.append("img")
+                    averageButton.attr("src", "res/citedFrequently.svg")
                    let average = averageWrapper.append("div")
                    average.text("Cited Frequently")
                 }
             }else{
                 let averageWrapper = tagWrapper.append("div")
                 averageWrapper.attr("class", "tag")
+                let averageButton = averageWrapper.append("img")
+                averageButton.attr("src", "res/unnoted.svg")
                 let average = averageWrapper.append("div")
                 average.text("Unnoted")
             }
