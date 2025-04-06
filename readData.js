@@ -6,11 +6,6 @@ function readHierachy(fileName){
         data = psv.parse(t)
         childCol = data.columns[0]
         parentCol = data.columns[1]
-        /*
-        stratify = d3.stratify()
-                    .id(data => data[childCol])
-                    .parentId(data => data[parentCol])
-        const root = stratify(data)*/
          root = d3.stratify()
                     .id(d => d[childCol])
                     .parentId(d => d[parentCol])(data)

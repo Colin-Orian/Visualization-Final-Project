@@ -4,17 +4,17 @@ function makeSunburst(data){
     const radius = sunburstWidth / 12
     //const radius = 100  / 2
     const color = d3.scaleOrdinal(d3.quantize(d3.interpolateSinebow, data.children.length + 1)) 
-    //const color = d3.scaleOrdinal(data.children, ["#EF476F", "#FFD166", "#06D6A0", "#118AB2"])
-    data.sum((d) => d.paperCount)
+    
+    data.sum((d) => d.paperCount) //Sum up all the number of papers to determine the radius of the arcs
     data.sort((a, b) => b.value - a.value);
     
     
-    const root = d3.partition()
+    const root = d3.partition() //Partition determines the location of each nodes reletave to their parents
             .size([2 * Math.PI, data.height +1])
             (data);
     root.each(d => d.current = d);
     
-    const arc = d3.arc()
+    const arc = d3.arc() //function to draw the arcs. This will use the results from d3.partition()
         .startAngle(d => d.x0)
         .endAngle(d => d.x1)
         .padAngle(d => Math.min((d.x1 - d.x0) / 2, 0.005))
@@ -31,30 +31,31 @@ function makeSunburst(data){
             .attr('transform', ('translate( 400, 400)'))
             .selectAll("path")
             .data(root.descendants().slice(1))
-            .join("path")
-                .style("fill", d => {while (d.depth > 1) d = d.parent; return color(d.data.name);})
+            .join("path") //draw the arcs
+                //determine the colour based off of the Domain parent.
+                .style("fill", d => {while (d.depth > 1) d = d.parent; return color(d.data.name);}) 
                 .attr("fill-opacity", d => arcVisible(d.current) ? (d.children ? 1.0 : 0.8) : 0)
                 .attr("pointer-events", d => arcVisible(d.current) ? "auto": "none")
                 .attr("d", d => arc(d.current))
                 .attr("id", d => d.id)
-                .on("mousemove", mouseMove)
+                .on("mousemove", mouseMove) //when the user mouses over the arc, display the name of the arc
                 .on('mouseout', mouseOut);
 
-      path.filter(d => d.children)
+      path.filter(d => d.children) //When the user clicks on the arc, filter the data and zoom into that arc
             .style("cursor", "pointer")
             .on("click", clicked);
       
-    const dynamicContainer = sunburstContainer.append("circle")
+    const dynamicContainer = sunburstContainer.append("circle") //Required to make the zoomable sunburst
                     .attr('transform', ('translate( 400, 400)'))
                     .datum(root)
                     .attr("r", radius)
                     .attr("fill", "none")
                     .attr("pointer-events", "all")
                     .attr("stroke", "black")
-                    .on("click", clicked)
+                    .on("click", clicked) //go up one parent
     
           
-
+    //tool tip to provide information about the arc
     const tooltip = sunburstContainer.append('text')
                     .attr('transform', ('translate( 400, 400)'))
                     .attr("class", "tooltip")
@@ -63,6 +64,7 @@ function makeSunburst(data){
                     .style("text-anchor", "middle")
                     .style("font-size", "20px");
 
+    //used for the overview section
     sunBurstTitle = sunburstContainer.append("text")
                     .attr('transform', ('translate( 400, 400)'))
                     .attr("id", "sunburstTitle")
@@ -90,7 +92,7 @@ function makeSunburst(data){
         //console.log(dynamicContainer)
 
         dynamicContainer.datum(p.parent || root)
-        root.each(d => d.target = {
+        root.each(d => d.target = { //recalcualte the location of all the arcs.
             x0: Math.max(0, Math.min(1, (d.x0 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
             x1: Math.max(0, Math.min(1, (d.x1 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
             y0: Math.max(0, d.y0 - p.depth),
@@ -101,7 +103,7 @@ function makeSunburst(data){
         currentRoot = p
         sunBurstTitle.text(p.id);
         
-        path.transition(t)
+        path.transition(t) //zoom into the selected arc
             .tween("data", d => {
                 const i = d3.interpolate(d.current, d.target);
                 return t => d.current = i(t);
@@ -109,14 +111,14 @@ function makeSunburst(data){
             .filter(function(d){
                 return +this.getAttribute("fill-opacity") || arcVisible(d.target);
             })
-
+            //change the opacity of the arcs if they are above the currently selected arc
             .attr("fill-opacity", d => arcVisible(d.target) ? (d.children ? 1.0 : 0.8) : 0)
             .attr("pointer-events", d => arcVisible(d.target) ? "auto": "none")
 
             .attrTween("d", d => () => arc(d.current));
 
 
-            filterData()
+            filterData() //filter the data based off of the topic.
     }
                     
            

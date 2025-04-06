@@ -2,7 +2,7 @@ const width = 850;
 const height = 750;
 startYearGlobal = null
 endYearGlobal = null
-
+//each of the sections of the UI
 const svg = d3.create("svg")
     
     .attr("width", width)
@@ -22,27 +22,33 @@ filterData = null
 currentData = null
 currentLeaves = null
 seedArticle = null
-data = readHierachy("./data/hierachy.csv")
+data = readHierachy("./data/hierachy.csv") //read the hiearchy data from the csv
 
 data.then((d) => {
 
-    openAlexData = readOpenAlex("./data/openalexworks.json")
+    openAlexData = readOpenAlex("./data/openalexworks.json") //read the openalex data
     //currentData = openAlexData
     openAlexData.then((o) =>
     { 
-        currentData = o
+        //The current data is the data that all the vsulizations work on.
+        //It will change depending on the filters, but right now it's the full dataset.
+        currentData = o 
+
         startYearGlobal = d3.min(o, current => current.publication_year)
         
         endYearGlobal = d3.max(o, current => current.publication_year)
-
+        
+        //When there is a change to the topic filter or timeline filter, call this function to
+        //filter the data.
         filterData = () => {
             
             currentLeaves = currentRoot.leaves()
-            //console.log(currentRoot.leaves());
+            //are the leaves within the date range?
             result = o.filter((m) =>{
                 return (m.publication_year >= startYearGlobal && m.publication_year <= endYearGlobal)
             })
 
+            //are the leaves within the topic filter?
             topicFilter = result.filter((m) =>{
                 entryTopics = m.topics.filter((t) =>{
                     return t.name == "topic"
@@ -58,12 +64,13 @@ data.then((d) => {
                 return false;
             })
             currentData = topicFilter
+            //Since there was an update, update all visulizations
             updateTimeGraph(startYearGlobal, endYearGlobal)
             updateScrollable(currentData)
             updateOverview(currentData)
             
         }
-        
+        //make all the sections
         makeSunburst(d)
         currentLeaves = currentRoot.leaves()
 
@@ -78,6 +85,7 @@ data.then((d) => {
 })
 
 
+//This portion is to allow the user to toggle from the timeline graph to the network graph.
 isTimeline = true
 d3.select("#timelineHeader").style("background-color", "lightblue")
                             .on("click", toggleTimeline)

@@ -11,7 +11,8 @@ function makeNetwork(){
     networkGraph.attr("width", 900)
     networkGraph.attr("height", 332)    
 
-    
+    //Create a header bar that will provide info to the user about the network. 
+    //This will change when the user selects the "set seed" button in the article list
     let titleWrapper = networkToolbar.append("div")
     titleWrapper.attr("class", "titleWrapper ")
     titleWrapper.append("div").text("Seed Title").style("font-weight", "bold")
@@ -20,7 +21,7 @@ function makeNetwork(){
         .style("fill", "black")
         .text("No seed paper selected")
 
-    networkToolbar.append("button")
+    networkToolbar.append("button") //When the button is clicked, display the network
         .text("Display Network")
         .attr("id", "networkButton")
         .style("fill", "black")
@@ -38,108 +39,74 @@ function makeNetwork(){
     node = d3.select("#networkGraph").append("g")
     node.attr("id", "networkNodes")
     
-    
-        
-    /*seedPrompt = networkGraph.append("text")
-    seedPrompt.attr("id", "seedPrompt")
-    if(seedArticle === null){
-        
-        seedPrompt.text("No seed selected. Selected a seed in the list to start")
-    }*/
-    
 }
 
 function updateNetwork(data){
     //let link = null
     
+    //Check if the seeds are valid
     if(seedArticle === null){
         alert("No seed selected")
     }
-    else if(seedArticle.referenced_works.length === 0){
+    else if(seedArticle.referenced_works.length === 0){ 
         alert("No related works found")
     }
     else{
-        
+        //clean up the network
         link.selectAll("*").remove()
         node.selectAll("*").remove()
 
-        d3.select("#seedPrompt").style("display", "none")
+        d3.select("#seedPrompt").style("display", "none") //hide the prompt
         
-        links = makeLinks(seedArticle.id, seedArticle.referenced_works, true)
+        //get a list of links from the referenced works to the seed article
+        links = makeLinks(seedArticle.id, seedArticle.referenced_works, true) 
+
+        //make all the nodes for the networks
         nodes = makeNodes(seedArticle.referenced_works.concat(seedArticle.id))
         //https://observablehq.com/@d3/force-directed-graph/2
-        //links = makeLinks(seedArticle.id, seedArticle.related_works, true)
-        //nodes = makeNodes(seedArticle.related_works.concat(seedArticle.id))
         ids = data.map(d => d.id)
         
-        
+        //Customize the links for the network
         link.selectAll()
             .data(links)
             .join("line")
                 .attr("stroke-width", d=> 1)
                 .attr("stroke", "black")
-                //.attr("x1", d => d.source.x)
-                //.attr("y1", d => d.source.y)
-                //.attr("x2", d => d.target.x)
-                //.attr("y2", d => d.target.y)
-
         
+        //customize the nodes for the network    
         node.attr("stroke", "black")
         node.selectAll()
             .data(nodes)
             .join("circle")
             .attr("r", 7)
             .attr("fill", d => {
-                if(d.id == seedArticle.id){
+                if(d.id == seedArticle.id){ //if the node is the seed, fill blue
                     return "blue"
                 }
-                else if(ids.includes(d.id)){
+                else if(ids.includes(d.id)){ //if the node is the dataset, fill green
                     return "green"
                 }
-                else{
+                else{ //otherwise fill red
                     return "red"
                 }
             })
-            .on("click", d => {
-                console.log(d)
+            .on("click", d => { //If the user clicks on the node, open up a tab to the OpenAlex webpage for that article
+                
                 clicked(d.target.__data__.id)
             }
             )
             .style("cursor", "pointer")
-            /*.call(d3.drag()
-                    .on("start", dragstarted)
-                    .on("drag", dragged)
-                    .on("end", dragended))*/
             .append("title")
                 .text(d=> d.id)
-
+        
+        //Provide forces for the nodes
         const simulation = d3.forceSimulation(nodes)
         .force("link", d3.forceLink(links).id((d) => d.id))
-        //.force("charge", d3.forceLink(links).distance(100))
         .force("charge", d3.forceManyBody().strength(-40))
         .force("collide", d3.forceCollide().radius(10))
         .force("center", d3.forceCenter(900 / 2, 372 / 2))
         .on("tick",ticked)
         
-        
-
-
-        function dragstarted(event){
-            if(!event.active) simulation.alphaTarget(0.3).restart()
-            event.subject.fx = event.subject.x
-            event.subject.fy = event.subject.y
-        }
-        
-        function dragged(event){
-            event.subject.fx = event.x
-            event.subject.fy = event.y
-        }
-        
-        function dragended(event){
-            event.subject.fx = null
-            event.subject.fy = null
-        }
-
         
     }
     
@@ -151,6 +118,7 @@ function clicked(urlLink){
     window.open(urlLink, "_blank").focus()
 }
 
+//Move the nodes each tick
 function ticked(){
     link.selectAll("line")
         .attr("x1", d => d.source.x)
@@ -160,16 +128,6 @@ function ticked(){
     node.selectAll("circle")
         .attr("cx", d => d.x)
         .attr("cy", d => d.y)
-    /*
-    link.selectAll("line")
-        .data(links)
-        .attr("x1", d => d.source.x)
-        .attr("y1", d => d.source.y)
-        .attr("x2", d => d.target.x)
-        .attr("y2", d => d.target.y)
-    node
-        .attr("cx", d => d.x)
-        .attr("cy", d => d.y)*/
 }
 
 function makeLinks(seedNode, destNodes, isBackwards){
