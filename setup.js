@@ -87,16 +87,42 @@ data.then((d) => {
 
 //This portion is to allow the user to toggle from the timeline graph to the network graph.
 isTimeline = true
-d3.select("#timelineHeader").style("background-color", "lightblue")
-                            .on("click", toggleTimeline)
+//d3.select("#timelineHeader").style("background-color", "lightblue")
+    //                        .on("click", toggleTimeline)
 
-d3.select("#networkHeader").style("cursor", "pointer")
-                           .on("click", toggleNetwork)
+//d3.select("#networkHeader").style("cursor", "pointer")
+  //                         .on("click", toggleNetwork)
+
+
 networkSvg.style("display", "none")
+bottomHeaders = [d3.select("#timelineHeader"), d3.select("#networkHeader")]
+bottomBodies = [lineGraphSvg, networkSvg]
 
+setToggleHeaders(bottomHeaders, bottomBodies)
 filterContainer.append(svg.node());
 lineGraphContainer.append(lineGraphSvg.node())
 lineGraphContainer.append(networkSvg.node())
+
+
+function setToggleHeaders(headers, bodies){
+    for(let i = 0; i < headers.length; i ++){
+        headers[i].on("click", () => {
+            for(let j = 0; j < bodies.length; j ++){
+                if(j === i){
+                    headers[j].attr("class", "headerSpacer-selected")
+                    bodies[j].style("display", "initial")
+                    
+                }else{
+                    headers[j].attr("class", "headerSpacer")
+                    bodies[j].style("display", "none")
+                    
+                }
+            }
+        })
+    }
+}
+
+
 
 function toggleNetwork(){
     if(isTimeline){

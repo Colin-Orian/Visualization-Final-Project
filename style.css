@@ -118,17 +118,21 @@ h3{
 .headerSpacer{
     display: inline-block;
     border-radius: 3px;
+    cursor: pointer;
     
 }
 
-.headerSpacer:focus{
-    background-color: lightblue;
-    border-radius: 3px;
-}
 
 .headerSpacer:hover{
     background-color: aquamarine;
     border-radius: 3px;
+}
+
+.headerSpacer-selected{
+    display: inline-block;
+    background-color: lightblue;
+    border-radius: 3px;
+    cursor: pointer;
 }
 .button{
     padding-left: 5px;
