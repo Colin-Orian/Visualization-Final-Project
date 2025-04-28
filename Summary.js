@@ -1,6 +1,6 @@
 function makeScrollable(data){
     
-    publicationList = d3.create("ul")
+    
     publicationList.attr("class", "SummaryList")
     
     //Modal to show more info https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_modal2
@@ -49,7 +49,7 @@ function makeScrollable(data){
     updateScrollable(data)
     
 
-    listContainer.append(publicationList.node())
+    
 
 }
     function updateScrollable(currentData){

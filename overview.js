@@ -1,5 +1,5 @@
 function makeOverview(data){
-    overviewWrapper = d3.create("div")
+    //overviewWrapper = d3.create("div")
     totalPapers = overviewWrapper.append("div")
     totalPapers.style("display", "flex")
     //set up the overview
@@ -29,7 +29,7 @@ function makeOverview(data){
              .style("float", "right")
              .text(sunburstTitle.textContent)
     
-    StatisticsContainer.append(overviewWrapper.node())
+    //StatisticsContainer.append(overviewWrapper.node())
 }
 
 function updateOverview(data){

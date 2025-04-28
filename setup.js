@@ -1,5 +1,5 @@
 const width = 850;
-const height = 750;
+const height = 900;
 startYearGlobal = null
 endYearGlobal = null
 //each of the sections of the UI
@@ -17,68 +17,90 @@ const networkSvg = d3.create("div")
             .attr("width", 900)
             .attr("height", 390)
             .attr("class", "networksvg")
+const overviewWrapper = d3.create("div")
+
+const publicationList = d3.create("ul")
+
+const chapterSVG = d3.create("svg")
+                .attr("width", width)
+                .attr("height", height)
+
 currentRoot = null
 filterData = null
 currentData = null
 currentLeaves = null
 seedArticle = null
-data = readHierachy("./data/hierachy.csv") //read the hiearchy data from the csv
 
+dataFolder = "./data/"
+
+data = readHierachy(dataFolder + "hierachy.csv") //read the hiearchy data from the csv
 data.then((d) => {
 
-    openAlexData = readOpenAlex("./data/openalexworks.json") //read the openalex data
+    openAlexData = readOpenAlex(dataFolder + "openalexworks.json") //read the openalex data
     //currentData = openAlexData
     openAlexData.then((o) =>
     { 
-        //The current data is the data that all the vsulizations work on.
-        //It will change depending on the filters, but right now it's the full dataset.
-        currentData = o 
 
-        startYearGlobal = d3.min(o, current => current.publication_year)
+        coreWorks = readCSV(dataFolder + "core_works_two.csv", "|")
         
-        endYearGlobal = d3.max(o, current => current.publication_year)
-        
-        //When there is a change to the topic filter or timeline filter, call this function to
-        //filter the data.
-        filterData = () => {
-            
-            currentLeaves = currentRoot.leaves()
-            //are the leaves within the date range?
-            result = o.filter((m) =>{
-                return (m.publication_year >= startYearGlobal && m.publication_year <= endYearGlobal)
-            })
-
-            //are the leaves within the topic filter?
-            topicFilter = result.filter((m) =>{
-                entryTopics = m.topics.filter((t) =>{
-                    return t.name == "topic"
-                })
+        coreWorks.then(c =>{
+            chapters = readCSV(dataFolder + "woa_two.csv", "|")
+            chapters.then(w =>{
+                //The current data is the data that all the vsulizations work on.
+                //It will change depending on the filters, but right now it's the full dataset.
+                coreData = c
+                woaData = w
+                currentData = o 
                 
-                for(leavesIndex = 0; leavesIndex < currentLeaves.length; leavesIndex ++) {
-                    for(entryIndex = 0; entryIndex < entryTopics.length; entryIndex ++){
-                        if(currentLeaves[leavesIndex].id == entryTopics[entryIndex].display_name){
-                            return true
-                        }
-                    }
-                }
-                return false;
-            })
-            currentData = topicFilter
-            //Since there was an update, update all visulizations
-            updateTimeGraph(startYearGlobal, endYearGlobal)
-            updateScrollable(currentData)
-            updateOverview(currentData)
-            
-        }
-        //make all the sections
-        makeSunburst(d)
-        currentLeaves = currentRoot.leaves()
+                startYearGlobal = d3.min(o, current => current.publication_year)
+                
+                endYearGlobal = d3.max(o, current => current.publication_year)
+                
+                //When there is a change to the topic filter or timeline filter, call this function to
+                //filter the data.
+                filterData = () => {
+                    
+                    currentLeaves = currentRoot.leaves()
+                    //are the leaves within the date range?
+                    result = o.filter((m) =>{
+                        return (m.publication_year >= startYearGlobal && m.publication_year <= endYearGlobal)
+                    })
 
-        makeTimelineBar(startYearGlobal, endYearGlobal)
-        makeTimelineGraph(startYearGlobal, endYearGlobal)
-        makeScrollable(currentData)
-        makeOverview(currentData)
-        makeNetwork()
+                    //are the leaves within the topic filter?
+                    topicFilter = result.filter((m) =>{
+                        entryTopics = m.topics.filter((t) =>{
+                            return t.name == "topic"
+                        })
+                        
+                        for(leavesIndex = 0; leavesIndex < currentLeaves.length; leavesIndex ++) {
+                            for(entryIndex = 0; entryIndex < entryTopics.length; entryIndex ++){
+                                if(currentLeaves[leavesIndex].id == entryTopics[entryIndex].display_name){
+                                    return true
+                                }
+                            }
+                        }
+                        return false;
+                    })
+                    currentData = topicFilter
+                    //Since there was an update, update all visulizations
+                    updateTimeGraph(startYearGlobal, endYearGlobal)
+                    updateScrollable(currentData)
+                    updateOverview(currentData)
+                    
+                }
+                //make all the sections
+                makeSunburst(d)
+                currentLeaves = currentRoot.leaves()
+
+                makeTimelineBar(startYearGlobal, endYearGlobal)
+                makeTimelineGraph(startYearGlobal, endYearGlobal)
+                makeScrollable(currentData)
+                makeOverview(currentData)
+                makeNetwork()
+                makeChapterFlow(coreData, woaData, o)
+
+            })
+        })
         
     }
     )
@@ -86,23 +108,34 @@ data.then((d) => {
 
 
 //This portion is to allow the user to toggle from the timeline graph to the network graph.
-isTimeline = true
-//d3.select("#timelineHeader").style("background-color", "lightblue")
-    //                        .on("click", toggleTimeline)
-
-//d3.select("#networkHeader").style("cursor", "pointer")
-  //                         .on("click", toggleNetwork)
-
-
-networkSvg.style("display", "none")
 bottomHeaders = [d3.select("#timelineHeader"), d3.select("#networkHeader")]
 bottomBodies = [lineGraphSvg, networkSvg]
-
 setToggleHeaders(bottomHeaders, bottomBodies)
-filterContainer.append(svg.node());
-lineGraphContainer.append(lineGraphSvg.node())
-lineGraphContainer.append(networkSvg.node())
 
+topRightHeaders = [d3.select("#articleHeader")]
+topRightBodies = [publicationList]
+topRightHeaders[0].attr("class", "headerSpacer-selected")
+
+middleHeaders = [d3.select("#overviewHeader")]
+middleBodies = [overviewWrapper]
+setToggleHeaders(middleHeaders, middleBodies)
+
+topLeftHeaders = [d3.select("#filterHeader"), d3.select("#chapterHeader")]
+topLeftBodies = [svg, chapterSVG]
+setToggleHeaders(topLeftHeaders, topLeftBodies)
+
+
+setBodies(filterContainer, topLeftBodies)
+setBodies(lineGraphContainer, bottomBodies)
+setBodies(listContainer, topRightBodies)
+setBodies(StatisticsContainer, middleBodies)
+
+
+function setBodies(container, bodies){
+    bodies.forEach(element => {
+        container.append(element.node())
+    });
+}
 
 function setToggleHeaders(headers, bodies){
     for(let i = 0; i < headers.length; i ++){
@@ -118,38 +151,12 @@ function setToggleHeaders(headers, bodies){
                     
                 }
             }
+            
         })
+
+        bodies[i].style("display", "none")
     }
-}
+    headers[0].attr("class", "headerSpacer-selected")
+    bodies[0].style("display", "initial")
+}   
 
-
-
-function toggleNetwork(){
-    if(isTimeline){
-        d3.select("#networkHeader").style("background-color", "lightblue")
-        d3.select("#networkHeader").style("cursor", "default")
-
-        d3.select("#timelineHeader").style("background-color", "cadetblue")
-        d3.select("#timelineHeader").style("cursor", "pointer")
-        isTimeline = false
-        lineGraphSvg.style("display", "none")
-        networkSvg.style("display", "initial")
-    }
-    
-}
-
-function toggleTimeline(){
-    if(!isTimeline){
-        d3.select("#timelineHeader").style("background-color", "lightblue")
-        d3.select("#timelineHeader").style("cursor", "default")
-
-        d3.select("#networkHeader").style("cursor", "pointer")
-        d3.select("#networkHeader").style("background-color", "cadetblue")
-        d3.select("#networkHeader").style("cursor", "pointer")
-        console.log("test")
-        lineGraphSvg.style("display", "initial")
-        networkSvg.style("display", "none")
-        isTimeline = true
-    }
-    
-}

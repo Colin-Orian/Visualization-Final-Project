@@ -17,12 +17,12 @@
 }
 
 
-
 div#listContainer{
     position: absolute;
     left: 1260px;
     top: 0px;
     height: 350px;
+    max-height: 350px;
     border:2px;
     background-color: #e4eff0;
     border-color: black;
@@ -132,7 +132,7 @@ h3{
     display: inline-block;
     background-color: lightblue;
     border-radius: 3px;
-    cursor: pointer;
+    
 }
 .button{
     padding-left: 5px;

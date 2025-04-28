@@ -105,7 +105,7 @@ function makeTimelineBar(startYear, endYear){
                     startText.attr("x", leftLoc)
                     startYearGlobal = timeScale(leftLoc)
                     startText.text(timeScale(leftLoc))
-                    console.log(timeLineLeftCoord)
+                    
                     return "translate(" + timeLineLeftCoord + ",0)";
                 }
             }
@@ -194,7 +194,7 @@ function updateTimeGraph(startYear, endYear){
     labelCount = 0
     outputIndex = -1
     dateStep = Math.floor(outputRange.length / numDates)
-    console.log(dateStep)
+    
     lessDates = []
     //Partition the dates in 10 boxes
     if(dateStep === 0){
@@ -204,7 +204,7 @@ function updateTimeGraph(startYear, endYear){
     }else{
         for(i = startYear; i <= endYear; i += dateStep){
             if((i-startYear) % dateStep === 0){
-                console.log(i)
+                
                 lessDates.push(i)
             }
             

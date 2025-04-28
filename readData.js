@@ -19,6 +19,14 @@ function readHierachy(fileName){
     
 }
 
+function readCSV(fileName, delim){
+    csv = d3.dsvFormat(delim)
+    const result = d3.text(fileName).then(t=>{
+        return csv.parse(t)
+    })
+    return result
+}
+
 function readOpenAlex(fileName){
     const data = d3.json(fileName)
     return data
