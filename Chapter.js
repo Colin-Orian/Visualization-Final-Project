@@ -109,20 +109,36 @@ function makeChapterFlow(coreData, chapters, articles){
         
         lines = chapterSVG.append("g")            
         
-
+        
         for(i = 0; i < chapters.length; i ++){
           let chapterId = chapters[i].woaii_chapter
           let topicList = data[chapterId]
-          keys = Object.keys(topicList)
-          for(j = 0; j < keys.length; j ++){
-            key = keys[j]
-            leftX = 10
-            rightX = width - 20
+          if(topicList != undefined){
 
-            leftY = chapters[i].y
-            rightY =  topicLoc[key]
+            curvePath = new d3.Path()
+            keys = Object.keys(topicList)
+            
+            
+            leftX = 10
+            leftY = chapterToScreen(chapters[i].y)
+            curvePath.moveTo(leftX, leftY)
+
+            for(j = 0; j < keys.length; j ++){
+              key = keys[j]
+              rightX = width - 20
+              rightY =  topicLoc[key]
+              curvePath.lineTo(rightX, rightY)
+              curvePath.moveTo(leftX, leftY)
+            }
+
+            lines.append("path")  
+                .attr("stroke", "black")
+                .attr("d", curvePath)
           }
+          
         }
+
+        
     })
 
 
