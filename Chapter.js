@@ -8,10 +8,17 @@ function makeChapterFlow(coreData, chapters, articles){
     angleStep = (2 * Math.PI) / chapters.length
     stepCounter = 0
 
-    
-    
+    chapterColumn = chapterSVG.append("g")
+    chapterColumn.attr("id", "chapterColumn")
 
-    const color = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow,  chapters.length + 1))
+    topicColumn = chapterSVG.append("g")
+    topicColumn.attr("id", "topicColumn")
+
+    lines = chapterSVG.append("g")            
+    lines.attr("id", "chapter-links")
+
+    const color = d3.scaleOrdinal().domain(chapters.map(d => {d.woaii_chapter}))
+                                   .range(d3.schemeCategory10)
     topics = articles.map(selectTopics)
     let uniqueTopics = new Set()
     topics.forEach(topic =>{
@@ -21,7 +28,7 @@ function makeChapterFlow(coreData, chapters, articles){
     })
 
         uniqueTopics = Array.from(uniqueTopics)
-        links = makeChapterLinks(coreData, chapters).then(data => {
+      makeChapterLinks(coreData, chapters).then(data => {
         console.log(data)
         
         //let chapterStep = height / chapters.length
@@ -57,7 +64,7 @@ function makeChapterFlow(coreData, chapters, articles){
           
         }
         
-        chapterColumn = chapterSVG.append("g")
+        
         
         chapterColumn.selectAll(".chapterCircle")
                   .data(chapters)
@@ -70,44 +77,48 @@ function makeChapterFlow(coreData, chapters, articles){
                   .attr("height", d =>{
                     return chapterToScreen(d.topicCount)
                   })
-                  .attr("width", 10)
+                  .attr("width", 30)
                   .attr("fill", d => {
-                    return "lightgreen"
+                    return color(d.woaii_chapter)
                   })
                   .attr("stroke", "black")
+                  .attr("id", d =>{
+                    return ("chapter_" + d.woaii_chapter)
+                  })
                   .on("mouseover", mouseMove)
                   .on("mouseout", mouseOut)
-
-      
+        
+        topicHeight = 20          
+        
+        topicToScreen = d3.scaleLinear([0, topicHeight * uniqueTopics.length], [0, height])
         topicStep = height / uniqueTopics.length
         stepCounter = 0
         topicLoc = {}
         for(i = 0; i < uniqueTopics.length; i ++){
-          temp = (topicStep * stepCounter) + 5
+          temp = (topicHeight * stepCounter) + 0
           
           topicLoc[uniqueTopics[i]] = temp
           stepCounter += 1
         }
-        topicColumn = chapterSVG.append("g")
-      
+        
+        topicX = 60
         topicColumn.selectAll(".topicCircle")
                     .data(uniqueTopics)
                     .enter()
                     .append("rect")
                     .attr("x", d =>{
-                        return width - 20
+                        return width - topicX
                     })
                     .attr("y", d =>{
-                        return topicLoc[d]   
+                        return topicToScreen(topicLoc[d])
                     })
                     .attr("width", 10)
-                    .attr("height", 20)
+                    .attr("height", topicToScreen(topicHeight))
                     .attr("fill", "lightblue")
                     .attr("stroke", "black")
                     .on("mouseover", topicMouseMove)
                     .on("mouseout", mouseOut)
         
-        lines = chapterSVG.append("g")            
         
         
         for(i = 0; i < chapters.length; i ++){
@@ -119,21 +130,23 @@ function makeChapterFlow(coreData, chapters, articles){
             keys = Object.keys(topicList)
             
             
-            leftX = 10
-            leftY = chapterToScreen(chapters[i].y)
+            leftX = 30
+            leftY = chapterToScreen(chapters[i].y) + (chapterToScreen(chapters[i].topicCount) / 2.0)
             curvePath.moveTo(leftX, leftY)
 
             for(j = 0; j < keys.length; j ++){
               key = keys[j]
-              rightX = width - 20
-              rightY =  topicLoc[key]
-              curvePath.lineTo(rightX, rightY)
+              rightX = width - topicX
+              rightY =  topicToScreen(topicLoc[key])
+              curvePath.lineTo(rightX, (rightY + 10))
               curvePath.moveTo(leftX, leftY)
             }
 
             lines.append("path")  
-                .attr("stroke", "black")
+                .attr("stroke", color(chapterId))
                 .attr("d", curvePath)
+                .attr("id", "link_" + chapterId)
+                
           }
           
         }
@@ -158,9 +171,21 @@ function makeChapterFlow(coreData, chapters, articles){
           .attr('y', my)
           .text(p.chapter_title)
           .style("text-anchor", "start")
+
+      
+      // https://groups.google.com/g/d3-js/c/qJYN2egS6b8?pli=1
+      lines.selectAll("*:not(#link_" + p.woaii_chapter +")").transition().duration(350).style("opacity", 0)
+
+      chapterColumn.selectAll("*:not(#chapter_" + p.woaii_chapter + ")").transition().duration(350).style("opacity", 0.3)
+      
+      //lines.select("#link_" + p.woaii_chapter).style("opacity", 100)
+            
+            
     }
     function mouseOut(event, p){
       // https://observablehq.com/@john-guerra/how-to-add-a-tooltip-in-d3
+      lines.selectAll("*").transition().duration(350).style("opacity", 1)
+      chapterColumn.selectAll("*").transition().duration(350).style("opacity", 1)
       tooltip.text("")
       
     }
@@ -187,8 +212,8 @@ function makeChapterFlow(coreData, chapters, articles){
   result = d3.json("./data/" + jsonName).then( data => {
     if(data == undefined){
       topicsDict = toDict(topics)
-      links = makeLinks(coreData, chapters, topicsDict)
-      return links
+      linksResults = makeLinks(coreData, chapters, topicsDict)
+      return linksResults
     }else{
       return data
     }  

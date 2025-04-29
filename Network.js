@@ -59,7 +59,7 @@ function updateNetwork(data){
         d3.select("#seedPrompt").style("display", "none") //hide the prompt
         
         //get a list of links from the referenced works to the seed article
-        links = makeLinks(seedArticle.id, seedArticle.referenced_works, true) 
+        links = makeNetworkLinks(seedArticle.id, seedArticle.referenced_works, true) 
 
         //make all the nodes for the networks
         nodes = makeNodes(seedArticle.referenced_works.concat(seedArticle.id))
@@ -130,7 +130,7 @@ function ticked(){
         .attr("cy", d => d.y)
 }
 
-function makeLinks(seedNode, destNodes, isBackwards){
+function makeNetworkLinks(seedNode, destNodes, isBackwards){
     if(isBackwards){
         let result = new Array(destNodes.length)
         for(i = 0; i < destNodes.length; i ++){
