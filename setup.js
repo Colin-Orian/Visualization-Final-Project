@@ -46,7 +46,7 @@ data.then((d) => {
     openAlexData.then((o) =>
     { 
 
-        coreWorks = readCSV(dataFolder + "core_works_three.csv", "|")
+        coreWorks = readCSV(dataFolder + "core_works.csv", "|")
         
         coreWorks.then(c =>{
             chapters = readCSV(dataFolder + "woa_two.csv", "|")
