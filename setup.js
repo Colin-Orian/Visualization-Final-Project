@@ -1,4 +1,4 @@
-const width = 850;
+const width = 1050;
 const height = 900;
 startYearGlobal = null
 endYearGlobal = null
@@ -10,12 +10,17 @@ const svg = d3.create("svg")
 
 const lineGraphSvg = d3.create("svg")
         .attr("width", 900)
-        .attr("height", 390)
+        .attr("height", 545)
         .attr("class", "linegraphsvg")
+
+const chapterTimelineSVG = d3.create("svg")
+            .attr("width", 900)
+            .attr("height", 545)
+            .attr("class", "chapterTimeline")      
 
 const networkSvg = d3.create("div")
             .attr("width", 900)
-            .attr("height", 390)
+            .attr("height", 545)
             .attr("class", "networksvg")
 const overviewWrapper = d3.create("div")
 
@@ -32,7 +37,7 @@ currentLeaves = null
 seedArticle = null
 
 dataFolder = "./data/"
-
+chapterColor = {}
 data = readHierachy(dataFolder + "hierachy.csv") //read the hiearchy data from the csv
 data.then((d) => {
 
@@ -41,7 +46,7 @@ data.then((d) => {
     openAlexData.then((o) =>
     { 
 
-        coreWorks = readCSV(dataFolder + "core_works_two.csv", "|")
+        coreWorks = readCSV(dataFolder + "core_works_three.csv", "|")
         
         coreWorks.then(c =>{
             chapters = readCSV(dataFolder + "woa_two.csv", "|")
@@ -88,6 +93,16 @@ data.then((d) => {
                     updateOverview(currentData)
                     
                 }
+                woaData = woaData.sort( (a, b) =>{
+                    return a.woaii_chapter < b.woaii_chapter
+                })
+                const color = d3.scaleOrdinal().domain(woaData.map(d => {d.woaii_chapter}))
+                                   .range(d3.schemeCategory10)
+                for(i = 0; i < woaData.length; i ++){
+                    chapterColor[woaData[i].woaii_chapter] = color(woaData[i].woaii_chapter)
+                    
+                }
+                
                 //make all the sections
                 makeSunburst(d)
                 currentLeaves = currentRoot.leaves()
@@ -98,6 +113,7 @@ data.then((d) => {
                 makeOverview(currentData)
                 makeNetwork()
                 makeChapterFlow(coreData, woaData, o)
+                makeChapterTimeline(coreData, woaData)
 
             })
         })
@@ -108,8 +124,8 @@ data.then((d) => {
 
 
 //This portion is to allow the user to toggle from the timeline graph to the network graph.
-bottomHeaders = [d3.select("#timelineHeader"), d3.select("#networkHeader")]
-bottomBodies = [lineGraphSvg, networkSvg]
+bottomHeaders = [d3.select("#timelineHeader"), d3.select("#networkHeader"), d3.select("#chapterTimelineHeader")]
+bottomBodies = [lineGraphSvg, networkSvg, chapterTimelineSVG]
 setToggleHeaders(bottomHeaders, bottomBodies)
 
 topRightHeaders = [d3.select("#articleHeader")]
