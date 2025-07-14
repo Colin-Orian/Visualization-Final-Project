@@ -132,7 +132,7 @@ function makeScrollable(data){
                 let averageCited = 0
                 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/entries
                 for(let  i = 0; i < element.counts_by_year.length; i ++){
-                    averageCited += element.counts_by_year[0].cited_by_count
+                    averageCited += element.counts_by_year[i].cited_by_count
                 }
                 averageCited = averageCited / element.counts_by_year.length
                 

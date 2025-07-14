@@ -216,35 +216,7 @@ function makeChapterTimeline(coreData, chapters){
                     .attr("fill", "black")
                     .style("pointer-events", "none")
                     .style("font-size", "20px");
-          
-    /*
-    for(i = 0; i < chapters.length; i ++){
-        temp = (boxWidth + legendSpacing) * (i % itemsPerRow)
-        
-        yLoc = Math.floor(i / itemsPerRow)
 
-
-
-        legend.append("rect")
-            .data(chapters[i])
-            .attr("x", temp + timeLineLeftCoord)
-            .attr("y", 360 + (boxWidth  + legendSpacing) * (yLoc))
-            .attr("fill", color(chapters[i].woaii_chapter))
-            .attr("width", boxWidth)
-            .attr("height", boxWidth)
-            .attr("class", "legendEntries")
-            .on("mouseover",timelineMouseOver)
-            .on("mouseout",timelineMouseOut)
-
-        legend.append('text')
-            .attr("x", temp + timeLineLeftCoord)
-            .attr("y", 360 + (boxWidth  + legendSpacing) * (yLoc) + (boxWidth / 2))
-            .text(chapters[i].woaii_chapter)
-            .style("fill", "black")
-        
-    }*/
- 
-    
 
     function timelineMouseOver(event, p){
 
