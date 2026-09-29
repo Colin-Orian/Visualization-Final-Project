@@ -90,7 +90,9 @@ data.then((d) => {
                     //Since there was an update, update all visulizations
                     updateTimeGraph(startYearGlobal, endYearGlobal)
                     updateScrollable(currentData)
-                    updateOverview(currentData)
+                    // result is the distinct-work population after the date filter
+                    // and before the existing topic-branch filter.
+                    updateOverview(currentData, result.length)
                     
                 }
                 woaData = woaData.sort( (a, b) =>{

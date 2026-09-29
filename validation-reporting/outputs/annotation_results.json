@@ -1,0 +1,48 @@
+{
+  "generated_by": "validation-reporting/geographic-ner-report.mjs evaluate",
+  "recall_note": "Recall is not estimated because undetected geographic references are not exhaustively annotated.",
+  "ner_sample": {
+    "rows": 100,
+    "geographic_mentions": 85,
+    "false_positive_mentions": 15,
+    "geographic_precision": {
+      "label": "NER geographic precision",
+      "numerator": 85,
+      "denominator": 100,
+      "proportion": 0.85,
+      "percentage": 85
+    },
+    "false_positive_proportion": {
+      "label": "NER false-positive proportion",
+      "numerator": 15,
+      "denominator": 100,
+      "proportion": 0.15,
+      "percentage": 15
+    }
+  },
+  "canonical_sample": {
+    "rows": 100,
+    "valid_geographic_references": 100,
+    "non_geographic_references": 0,
+    "correct_canonical_assignments": 100,
+    "incorrect_canonical_assignments": 0,
+    "geographic_reference_precision": {
+      "label": "Geographic-reference precision",
+      "numerator": 100,
+      "denominator": 100,
+      "proportion": 1,
+      "percentage": 100
+    },
+    "canonical_region_assignment_accuracy": {
+      "label": "Canonical-region assignment accuracy among valid geographic mentions",
+      "numerator": 100,
+      "denominator": 100,
+      "proportion": 1,
+      "percentage": 100
+    }
+  },
+  "annotation_inputs": {
+    "ner": "D:\\Work\\Coding\\Visualization-Final-Project\\validation-reporting\\outputs\\ner_validation_sample_100.csv",
+    "canonical": "D:\\Work\\Coding\\Visualization-Final-Project\\validation-reporting\\outputs\\canonical_validation_sample_100.csv"
+  }
+}

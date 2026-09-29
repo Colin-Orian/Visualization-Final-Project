@@ -1,3 +1,7 @@
+// Entity data keyed by OpenAlex work ID, loaded once at startup
+let entityData = {};
+d3.json("data/all_entities.json").then(d => { entityData = d; });
+
 function makeScrollable(data){
     
     
@@ -170,6 +174,46 @@ function makeScrollable(data){
         });
     }
 
+// Wraps LOC/GPE entities in the abstract text with colored <span> tags.
+// Falls back to plain text when no entity data exists for this work.
+function renderAbstractWithEntities(text, id) {
+    const abstractEl = d3.select("#abstractBody");
+    const entities = entityData[id];
+
+    if (!entities || entities.length === 0) {
+        abstractEl.text(text);
+        return;
+    }
+
+    // Escape raw text fragments to prevent XSS when using innerHTML
+    function esc(s) {
+        return s.replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+    }
+
+    // Sort ascending by start offset so we can walk the string once
+    const sorted = entities.slice().sort((a, b) => a.start - b.start);
+
+    let html = "";
+    let cursor = 0;
+    for (const ent of sorted) {
+        html += esc(text.slice(cursor, ent.start));
+        html += `<span class="ent ent-${ent.label}">${esc(ent.text)}</span>`;
+        cursor = ent.end;
+    }
+    html += esc(text.slice(cursor));
+
+    // OpenAlex abstracts reconstructed from inverted index often have a space
+    // before punctuation (e.g. "Africa , Antarctica"). Collapse those here so
+    // punctuation sits against the preceding text or span without touching the
+    // source abstract string.
+    html = html.replace(/ ([,\.!?;:])/g, '$1');
+
+    abstractEl.node().innerHTML = html;
+}
+
 //Get the elements abstract, author, and DOI. Use it to populate the modal
 function showMoreInfo(element){
     
@@ -178,7 +222,7 @@ function showMoreInfo(element){
     if(element.ab === undefined){
         d3.select("#abstractBody").text("No abstract found.")
     }else{
-        d3.select("#abstractBody").text(element.ab)
+        renderAbstractWithEntities(element.ab, element.id)
     }
     
 
