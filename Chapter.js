@@ -24,7 +24,8 @@ function makeChapterFlow(coreData, chapters, articles) {
         mutedStroke: cssColor("--muted-link-stroke", "#c6cdd3"),
         primaryAccent: cssColor("--primary-accent", "#2f8f6b"),
         secondaryAccent: cssColor("--secondary-accent", "#ae9176"),
-        selectedBackground: cssColor("--selected-background", "#dff2ea")
+        selectedBackground: cssColor("--selected-background", "#dff2ea"),
+        tooltipSurface: cssColor("--panel-header-background", "#f6eee7")
     };
     const defaultLinkOpacity = 0.32;
     const highlightedLinkOpacity = 0.92;
@@ -178,9 +179,23 @@ function makeChapterFlow(coreData, chapters, articles) {
             const chapterColumn  = chapterSVG.append("g").attr("id", "chapterColumn");
             const topicColumn    = chapterSVG.append("g").attr("id", "topicColumn");
             const lines          = chapterSVG.append("g").attr("id", "chapter-links");
-            const tooltip        = chapterSVG.append("text")
-                .attr("class", "tooltip").attr("fill", theme.primaryText)
-                .style("pointer-events", "none").style("font-size", "20px");
+            const tooltip        = chapterSVG.append("g")
+                .attr("class", "tooltip")
+                .attr("aria-hidden", "true")
+                .style("pointer-events", "none")
+                .style("opacity", 0)
+                .style("filter", "drop-shadow(0 3px 7px rgba(63, 70, 90, 0.16))");
+
+            tooltip.append("rect")
+                .attr("rx", 7).attr("ry", 7)
+                .attr("fill", theme.tooltipSurface)
+                .attr("stroke", theme.secondaryAccent)
+                .attr("stroke-width", 1);
+
+            tooltip.append("text")
+                .attr("fill", theme.primaryText)
+                .style("font-size", "12px")
+                .style("font-weight", 600);
 
             if (mode === "A") {
                 drawModeA(locationColumn, chapterColumn, topicColumn, lines, tooltip);
@@ -348,13 +363,86 @@ function makeChapterFlow(coreData, chapters, articles) {
                 };
             }
 
-            function showTooltip(event, text) {
-                // Resolve pointer coordinates in the root SVG so the same tooltip
-                // positioning works for rectangles and curved path elements.
+            function showTooltip(event, value) {
+                const text = String(value || "");
+                if (!text) {
+                    tooltip.style("opacity", 0).attr("aria-hidden", "true");
+                    return;
+                }
+
+                const paddingX = 10;
+                const paddingY = 7;
+                const fontSize = 12;
+                const lineHeight = 16;
+                const safeMargin = 8;
+                const pointerOffset = 14;
+                const svgWidth = Number(chapterSVG.attr("width")) || width;
+                const svgHeight = Number(chapterSVG.attr("height")) || height;
+                const maxTextWidth = Math.min(360, svgWidth - 2 * (safeMargin + paddingX));
+                const tooltipText = tooltip.select("text");
+
+                // SVG does not wrap text automatically. A temporary tspan measures
+                // each candidate line using the browser's active font metrics.
+                const probe = tooltipText.append("tspan").style("visibility", "hidden");
+                const measure = candidate => {
+                    probe.text(candidate);
+                    const node = probe.node();
+                    return typeof node.getComputedTextLength === "function"
+                        ? node.getComputedTextLength()
+                        : candidate.length * 7;
+                };
+                const words = text.split(/\s+/);
+                const lines = [];
+                let currentLine = "";
+
+                words.forEach(word => {
+                    const candidate = currentLine ? `${currentLine} ${word}` : word;
+                    if (currentLine && measure(candidate) > maxTextWidth) {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    } else {
+                        currentLine = candidate;
+                    }
+                });
+                if (currentLine) lines.push(currentLine);
+                probe.remove();
+
+                const tspans = tooltipText.selectAll("tspan")
+                    .data(lines)
+                    .join("tspan")
+                    .attr("x", paddingX)
+                    .attr("y", (_, index) => paddingY + fontSize + index * lineHeight)
+                    .text(line => line);
+
+                const measuredWidths = [];
+                tspans.each(function(line) {
+                    measuredWidths.push(typeof this.getComputedTextLength === "function"
+                        ? this.getComputedTextLength()
+                        : line.length * 7);
+                });
+                const cardWidth = Math.ceil(Math.max(100, ...measuredWidths) + 2 * paddingX);
+                const cardHeight = Math.ceil(lines.length * lineHeight + 2 * paddingY);
+
+                tooltip.select("rect")
+                    .attr("width", cardWidth)
+                    .attr("height", cardHeight);
+
+                // Resolve coordinates in the root SVG, then prefer an above-right
+                // placement. Flip and clamp at the edges to keep the full card visible.
                 const [mx, my] = d3.pointer(event, chapterSVG.node());
-                tooltip.attr("x", mx).attr("y", my)
-                    .text(text)
-                    .style("text-anchor", "start");
+                let x = mx + pointerOffset;
+                if (x + cardWidth > svgWidth - safeMargin) x = mx - cardWidth - pointerOffset;
+                x = Math.max(safeMargin, Math.min(svgWidth - cardWidth - safeMargin, x));
+
+                let y = my - cardHeight - pointerOffset;
+                if (y < safeMargin) y = my + pointerOffset;
+                y = Math.max(safeMargin, Math.min(svgHeight - cardHeight - safeMargin, y));
+
+                tooltip
+                    .attr("transform", `translate(${x}, ${y})`)
+                    .attr("aria-label", text)
+                    .attr("aria-hidden", "false")
+                    .style("opacity", 1);
             }
 
             function formatWorkCount(count) {
@@ -364,6 +452,8 @@ function makeChapterFlow(coreData, chapters, articles) {
             function preview(type, event, datum) {
                 if (type === "chapter") {
                     showTooltip(event, datum.chapter_title ? datum.chapter_title.slice(0, 40) : "");
+                } else {
+                    showTooltip(event, datum);
                 }
                 applySelection(selectionFor(type, datum));
             }
@@ -382,7 +472,7 @@ function makeChapterFlow(coreData, chapters, articles) {
             }
 
             function restorePersistent() {
-                tooltip.text("");
+                tooltip.style("opacity", 0).attr("aria-hidden", "true");
                 applySelection(persistentSelection);
             }
 
