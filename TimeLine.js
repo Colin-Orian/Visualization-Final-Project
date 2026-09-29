@@ -1,4 +1,13 @@
 function makeTimelineBar(startYear, endYear){
+    const rootStyle = getComputedStyle(document.documentElement)
+    const cssColor = (name, fallback) => rootStyle.getPropertyValue(name).trim() || fallback
+    const theme = {
+        primaryText: cssColor("--primary-text", "#3f465a"),
+        border: cssColor("--border", "#ded6cf"),
+        primaryAccent: cssColor("--primary-accent", "#2f8f6b"),
+        secondaryAccent: cssColor("--secondary-accent", "#ae9176"),
+        selectedBackground: cssColor("--selected-background", "#dff2ea")
+    }
     let timeLineLeftCoord = 20
     let timeLineRightCoord = 800
     leftLoc = timeLineLeftCoord
@@ -21,7 +30,11 @@ function makeTimelineBar(startYear, endYear){
                    .attr("y", 0)
                    .attr("width", timeLineRightCoord)
                    .attr("height", 50)
-                   .attr("fill", "lightblue");
+                   .attr("rx", 8)
+                   .attr("ry", 8)
+                   .attr("fill", theme.selectedBackground)
+                   .attr("stroke", theme.border)
+                   .attr("stroke-width", 1);
 
                 
         startMargin = timelineBar.append("g");
@@ -33,13 +46,15 @@ function makeTimelineBar(startYear, endYear){
                     .attr("id", "leftMargin")
                     .attr("width", 10)
                     .attr("height", 75)
-                    .attr("fill", "grey")
+                    .attr("rx", 5)
+                    .attr("ry", 5)
+                    .attr("fill", theme.primaryAccent)
                     .style("cursor", "pointer")
                     
        startText = startMargin.append("text")
                     .attr("x", timeLineLeftCoord)
                     .attr("y", 90)
-                    .style("fill", "black")
+                    .style("fill", theme.primaryText)
                     .style('text-anchor', "middle")
                     .text(startYear);
         
@@ -52,12 +67,14 @@ function makeTimelineBar(startYear, endYear){
                     .attr("id", "rightMargin")
                     .attr("width", 10)
                     .attr("height", 75)
+                    .attr("rx", 5)
+                    .attr("ry", 5)
                     .style("cursor", "pointer")
-                    .attr("fill", "grey");
+                    .attr("fill", theme.primaryAccent);
         endText = endMargin.append("text")
                     .attr("x", timeLineRightCoord)
                     .attr("y", 90)
-                    .style("fill", "black")
+                    .style("fill", theme.primaryText)
                     .style('text-anchor', "middle")
                     .text(endYear);
          
@@ -68,7 +85,9 @@ function makeTimelineBar(startYear, endYear){
                                                     .on("end", dragended))
 
     function dragstarted(event){
-        d3.select(this).attr("stroke", "black") //make the bar change colour when moving
+        d3.select(this)
+            .attr("stroke", theme.secondaryAccent)
+            .attr("stroke-width", 2) //retain the existing drag emphasis with the shared palette
        
     }
     
@@ -124,6 +143,15 @@ function makeTimelineBar(startYear, endYear){
 
 function makeTimelineGraph(startYear, endYear){
 
+    const rootStyle = getComputedStyle(document.documentElement)
+    const cssColor = (name, fallback) => rootStyle.getPropertyValue(name).trim() || fallback
+    const theme = {
+        primaryText: cssColor("--primary-text", "#3f465a"),
+        secondaryText: cssColor("--secondary-text", "#667085"),
+        mutedStroke: cssColor("--muted-link-stroke", "#c6cdd3"),
+        primaryAccent: cssColor("--primary-accent", "#2f8f6b")
+    }
+
     let timeLineLeftCoord = 40
     let timeLineRightCoord = 820
     leftLoc = timeLineLeftCoord
@@ -139,16 +167,16 @@ function makeTimelineGraph(startYear, endYear){
             .attr("x2", timeLineRightCoord + timeLineLeftCoord)
             .attr("y1", 310)
             .attr("y2", 310)
-            .attr("stroke", "grey")
-            .attr("stroke-width", 10)
+            .attr("stroke", theme.mutedStroke)
+            .attr("stroke-width", 1.5)
     
     yAxis = timelineGraph.append("line")
             .attr("x1", timeLineLeftCoord+5)
             .attr("x2", timeLineLeftCoord+5)
             .attr("y1", 310)
             .attr("y2", 0)
-            .attr("stroke", "grey")
-            .attr("stroke-width", 10)
+            .attr("stroke", theme.mutedStroke)
+            .attr("stroke-width", 1.5)
 
     //Draw the ticks for the y labels
     //Y labels
@@ -164,8 +192,8 @@ function makeTimelineGraph(startYear, endYear){
                  .data(yLabelLoc)
                  .enter()
                  .append("line")
-                 .attr("stroke", "darkgreen")
-                 .attr("stroke-width", 3)
+                 .attr("stroke", theme.primaryAccent)
+                 .attr("stroke-width", 2)
                  .attr("x1", timeLineLeftCoord-30)
                  .attr("x2", timeLineLeftCoord)
                  .attr("y1", d => d)
@@ -177,6 +205,12 @@ function makeTimelineGraph(startYear, endYear){
     updateTimeGraph(startYear, endYear)
 }
 function updateTimeGraph(startYear, endYear){
+    const rootStyle = getComputedStyle(document.documentElement)
+    const cssColor = (name, fallback) => rootStyle.getPropertyValue(name).trim() || fallback
+    const theme = {
+        secondaryText: cssColor("--secondary-text", "#667085"),
+        primaryAccent: cssColor("--primary-accent", "#2f8f6b")
+    }
     let timeLineLeftCoord = 40
     let timeLineRightCoord = 820
     dynamicGraph.selectAll("*").remove() //clean the graph
@@ -224,6 +258,8 @@ function updateTimeGraph(startYear, endYear){
                     
                         return timeScale(d)
                     })
+                    .attr("fill", theme.secondaryText)
+                    .style("font-size", "12px")
                     .text(d => d)
     
                     
@@ -291,11 +327,17 @@ function updateTimeGraph(startYear, endYear){
                 .append('text')
                 .text((d) => Math.trunc(d))
                 .attr("x", timeLineLeftCoord-30)
-                .attr("y", (d) => 300 - (yScale(d)))
+                // SVG text uses y as its baseline; lift the label clear of the tick line.
+                .attr("y", (d) => 300 - yScale(d) - 6)
+                .attr("fill", theme.secondaryText)
+                .style("font-size", "12px")
 
 
     dynamicGraph.append("path")
-                .style("stroke", "black")
+                .style("stroke", theme.primaryAccent)
+                .style("stroke-width", 2.25)
+                .style("stroke-linecap", "round")
+                .style("stroke-linejoin", "round")
                 .style("fill", "none")
                 .attr("d", lineGraph)
 }

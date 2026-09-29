@@ -15,6 +15,61 @@ function makeChapterFlow(coreData, chapters, articles) {
         .domain(LOCATIONS)
         .range(d3.schemeTableau10.concat(d3.schemeTableau10).slice(0, LOCATIONS.length));
 
+    // Read the shared CSS theme once so SVG marks use the same visual foundation
+    // as the surrounding panels while retaining the existing semantic palettes.
+    const rootStyle = getComputedStyle(document.documentElement);
+    const cssColor = (name, fallback) => rootStyle.getPropertyValue(name).trim() || fallback;
+    const theme = {
+        primaryText: cssColor("--primary-text", "#3f465a"),
+        mutedStroke: cssColor("--muted-link-stroke", "#c6cdd3"),
+        primaryAccent: cssColor("--primary-accent", "#2f8f6b"),
+        secondaryAccent: cssColor("--secondary-accent", "#ae9176"),
+        selectedBackground: cssColor("--selected-background", "#dff2ea"),
+        tooltipSurface: cssColor("--panel-header-background", "#f6eee7")
+    };
+    const defaultLinkOpacity = 0.32;
+    const highlightedLinkOpacity = 0.92;
+
+    // SVG has no rounded-polygon primitive. Quadratic curves trim each corner
+    // of the six-point outline while preserving the rectangle's original bounds.
+    function roundedPolygonPath(points, radius) {
+        const path = new d3.Path();
+        points.forEach((point, index) => {
+            const previous = points[(index - 1 + points.length) % points.length];
+            const next = points[(index + 1) % points.length];
+            const previousDistance = Math.hypot(previous.x - point.x, previous.y - point.y);
+            const nextDistance = Math.hypot(next.x - point.x, next.y - point.y);
+            const previousOffset = Math.min(radius, previousDistance / 2);
+            const nextOffset = Math.min(radius, nextDistance / 2);
+            const start = {
+                x: point.x + (previous.x - point.x) * previousOffset / previousDistance,
+                y: point.y + (previous.y - point.y) * previousOffset / previousDistance
+            };
+            const end = {
+                x: point.x + (next.x - point.x) * nextOffset / nextDistance,
+                y: point.y + (next.y - point.y) * nextOffset / nextDistance
+            };
+
+            if (index === 0) path.moveTo(start.x, start.y);
+            else path.lineTo(start.x, start.y);
+            path.quadraticCurveTo(point.x, point.y, end.x, end.y);
+        });
+        path.closePath();
+        return path.toString();
+    }
+
+    function locationHexPath(x, y, width, markHeight) {
+        const shoulder = markHeight * 0.22;
+        return roundedPolygonPath([
+            { x: x + width / 2, y },
+            { x: x + width, y: y + shoulder },
+            { x: x + width, y: y + markHeight - shoulder },
+            { x: x + width / 2, y: y + markHeight },
+            { x, y: y + markHeight - shoulder },
+            { x, y: y + shoulder }
+        ], 3);
+    }
+
     // Toggle button inserted before chapterSVG so it is hidden/shown with it
     let currentMode = "A";
     // Semantic selection survives redraws because it stores the entity identity,
@@ -124,9 +179,23 @@ function makeChapterFlow(coreData, chapters, articles) {
             const chapterColumn  = chapterSVG.append("g").attr("id", "chapterColumn");
             const topicColumn    = chapterSVG.append("g").attr("id", "topicColumn");
             const lines          = chapterSVG.append("g").attr("id", "chapter-links");
-            const tooltip        = chapterSVG.append("text")
-                .attr("class", "tooltip").attr("fill", "black")
-                .style("pointer-events", "none").style("font-size", "20px");
+            const tooltip        = chapterSVG.append("g")
+                .attr("class", "tooltip")
+                .attr("aria-hidden", "true")
+                .style("pointer-events", "none")
+                .style("opacity", 0)
+                .style("filter", "drop-shadow(0 3px 7px rgba(63, 70, 90, 0.16))");
+
+            tooltip.append("rect")
+                .attr("rx", 7).attr("ry", 7)
+                .attr("fill", theme.tooltipSurface)
+                .attr("stroke", theme.secondaryAccent)
+                .attr("stroke-width", 1);
+
+            tooltip.append("text")
+                .attr("fill", theme.primaryText)
+                .style("font-size", "12px")
+                .style("font-weight", 600);
 
             if (mode === "A") {
                 drawModeA(locationColumn, chapterColumn, topicColumn, lines, tooltip);
@@ -138,11 +207,39 @@ function makeChapterFlow(coreData, chapters, articles) {
         // ── Shared interaction state ──────────────────────────────────────
 
         function makeInteractionController(mode, locationColumn, chapterColumn, topicColumn, lines, tooltip) {
+            function markIsSelected(type, datum, selection) {
+                if (!selection || selection.type !== type) return false;
+                const value = type === "chapter" ? datum.woaii_chapter : datum;
+                return value === selection.value;
+            }
+
+            // The thicker accent stroke identifies the actively previewed or
+            // persistently selected entity without changing the mark geometry.
+            function styleSelectedMarks(selection) {
+                const styleMarks = (marks, type, baseStroke) => {
+                    marks
+                        .attr("stroke", datum => markIsSelected(type, datum, selection)
+                            ? theme.primaryAccent
+                            : baseStroke)
+                        .attr("stroke-width", datum => markIsSelected(type, datum, selection) ? 3 : 1)
+                        .style("filter", datum => markIsSelected(type, datum, selection)
+                            ? "drop-shadow(0 0 3px rgba(47, 143, 107, 0.38))"
+                            : "none");
+                };
+
+                styleMarks(locationColumn.selectAll(".locRect"), "location", theme.primaryText);
+                styleMarks(chapterColumn.selectAll(".chapterRect"), "chapter", theme.primaryText);
+                styleMarks(topicColumn.selectAll(".topicRect"), "topic", theme.secondaryAccent);
+            }
+
             function restoreAll() {
-                lines.selectAll("path").transition().duration(350).style("opacity", 1);
+                lines.selectAll("path").transition().duration(350)
+                    .attr("stroke", theme.mutedStroke)
+                    .style("opacity", defaultLinkOpacity);
                 locationColumn.selectAll("*").transition().duration(350).style("opacity", 1);
                 chapterColumn.selectAll("*").transition().duration(350).style("opacity", 1);
                 topicColumn.selectAll("*").transition().duration(350).style("opacity", 1);
+                styleSelectedMarks(null);
             }
 
             // Resolve the complete visible path for a semantic entity selection.
@@ -238,9 +335,15 @@ function makeChapterFlow(coreData, chapters, articles) {
                 }
 
                 const visible = getVisiblePath(selection);
-                lines.selectAll("path").transition().duration(350).style("opacity", function() {
-                    return linkIsVisible(this, selection, visible) ? 1 : 0;
-                });
+                lines.selectAll("path").transition().duration(350)
+                    .attr("stroke", function() {
+                        return linkIsVisible(this, selection, visible)
+                            ? this.getAttribute("data-semantic-color")
+                            : theme.mutedStroke;
+                    })
+                    .style("opacity", function() {
+                        return linkIsVisible(this, selection, visible) ? highlightedLinkOpacity : 0;
+                    });
                 locationColumn.selectAll("*").transition().duration(350).style("opacity", location =>
                     visible.locations.has(location) ? 1 : 0.3
                 );
@@ -250,6 +353,7 @@ function makeChapterFlow(coreData, chapters, articles) {
                 topicColumn.selectAll("*").transition().duration(350).style("opacity", topic =>
                     visible.topics.has(topic) ? 1 : 0.3
                 );
+                styleSelectedMarks(selection);
             }
 
             function selectionFor(type, datum) {
@@ -259,13 +363,86 @@ function makeChapterFlow(coreData, chapters, articles) {
                 };
             }
 
-            function showTooltip(event, text) {
-                // Resolve pointer coordinates in the root SVG so the same tooltip
-                // positioning works for rectangles and curved path elements.
+            function showTooltip(event, value) {
+                const text = String(value || "");
+                if (!text) {
+                    tooltip.style("opacity", 0).attr("aria-hidden", "true");
+                    return;
+                }
+
+                const paddingX = 10;
+                const paddingY = 7;
+                const fontSize = 12;
+                const lineHeight = 16;
+                const safeMargin = 8;
+                const pointerOffset = 14;
+                const svgWidth = Number(chapterSVG.attr("width")) || width;
+                const svgHeight = Number(chapterSVG.attr("height")) || height;
+                const maxTextWidth = Math.min(360, svgWidth - 2 * (safeMargin + paddingX));
+                const tooltipText = tooltip.select("text");
+
+                // SVG does not wrap text automatically. A temporary tspan measures
+                // each candidate line using the browser's active font metrics.
+                const probe = tooltipText.append("tspan").style("visibility", "hidden");
+                const measure = candidate => {
+                    probe.text(candidate);
+                    const node = probe.node();
+                    return typeof node.getComputedTextLength === "function"
+                        ? node.getComputedTextLength()
+                        : candidate.length * 7;
+                };
+                const words = text.split(/\s+/);
+                const lines = [];
+                let currentLine = "";
+
+                words.forEach(word => {
+                    const candidate = currentLine ? `${currentLine} ${word}` : word;
+                    if (currentLine && measure(candidate) > maxTextWidth) {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    } else {
+                        currentLine = candidate;
+                    }
+                });
+                if (currentLine) lines.push(currentLine);
+                probe.remove();
+
+                const tspans = tooltipText.selectAll("tspan")
+                    .data(lines)
+                    .join("tspan")
+                    .attr("x", paddingX)
+                    .attr("y", (_, index) => paddingY + fontSize + index * lineHeight)
+                    .text(line => line);
+
+                const measuredWidths = [];
+                tspans.each(function(line) {
+                    measuredWidths.push(typeof this.getComputedTextLength === "function"
+                        ? this.getComputedTextLength()
+                        : line.length * 7);
+                });
+                const cardWidth = Math.ceil(Math.max(100, ...measuredWidths) + 2 * paddingX);
+                const cardHeight = Math.ceil(lines.length * lineHeight + 2 * paddingY);
+
+                tooltip.select("rect")
+                    .attr("width", cardWidth)
+                    .attr("height", cardHeight);
+
+                // Resolve coordinates in the root SVG, then prefer an above-right
+                // placement. Flip and clamp at the edges to keep the full card visible.
                 const [mx, my] = d3.pointer(event, chapterSVG.node());
-                tooltip.attr("x", mx).attr("y", my)
-                    .text(text)
-                    .style("text-anchor", "start");
+                let x = mx + pointerOffset;
+                if (x + cardWidth > svgWidth - safeMargin) x = mx - cardWidth - pointerOffset;
+                x = Math.max(safeMargin, Math.min(svgWidth - cardWidth - safeMargin, x));
+
+                let y = my - cardHeight - pointerOffset;
+                if (y < safeMargin) y = my + pointerOffset;
+                y = Math.max(safeMargin, Math.min(svgHeight - cardHeight - safeMargin, y));
+
+                tooltip
+                    .attr("transform", `translate(${x}, ${y})`)
+                    .attr("aria-label", text)
+                    .attr("aria-hidden", "false")
+                    .style("opacity", 1);
             }
 
             function formatWorkCount(count) {
@@ -275,20 +452,27 @@ function makeChapterFlow(coreData, chapters, articles) {
             function preview(type, event, datum) {
                 if (type === "chapter") {
                     showTooltip(event, datum.chapter_title ? datum.chapter_title.slice(0, 40) : "");
+                } else {
+                    showTooltip(event, datum);
                 }
                 applySelection(selectionFor(type, datum));
             }
 
             function bindRelationship(selection, tooltipText) {
                 selection
-                    .on("mouseover", event => showTooltip(event, tooltipText))
+                    .on("mouseover", function(event) {
+                        showTooltip(event, tooltipText);
+                        d3.select(this).interrupt()
+                            .attr("stroke", this.getAttribute("data-semantic-color"))
+                            .style("opacity", highlightedLinkOpacity);
+                    })
                     // Leaving a link clears its tooltip and restores any node
                     // selection that was made persistent by clicking.
                     .on("mouseout", restorePersistent);
             }
 
             function restorePersistent() {
-                tooltip.text("");
+                tooltip.style("opacity", 0).attr("aria-hidden", "true");
                 applySelection(persistentSelection);
             }
 
@@ -326,11 +510,14 @@ function makeChapterFlow(coreData, chapters, articles) {
             // Column headers
             const hdr = chapterSVG.append("g");
             hdr.append("text").attr("x", locRectX).attr("y", 30)
-                .text("Location").style("font-size", "20px").style("font-weight", "bold");
+                .text("Location").attr("fill", theme.primaryText)
+                .style("font-size", "20px").style("font-weight", 650);
             hdr.append("text").attr("x", chapRectX).attr("y", 30)
-                .text("WOA II Chapter").style("font-size", "20px").style("font-weight", "bold");
+                .text("WOA II Chapter").attr("fill", theme.primaryText)
+                .style("font-size", "20px").style("font-weight", 650);
             hdr.append("text").attr("x", topicRectX).attr("y", 30)
-                .text("OpenAlex Topic").style("font-size", "20px").style("font-weight", "bold");
+                .text("OpenAlex Topic").attr("fill", theme.primaryText)
+                .style("font-size", "20px").style("font-weight", 650);
 
             const interaction = makeInteractionController(
                 "A", locationColumn, chapterColumn, topicColumn, lines, tooltip
@@ -339,10 +526,13 @@ function makeChapterFlow(coreData, chapters, articles) {
             // ── Location column ───────────────────────────────────────────
 
             const locationRects = locationColumn.selectAll(".locRect")
-                .data(LOCATIONS).enter().append("rect")
-                .attr("x", locRectX).attr("y", d => locY[d])
-                .attr("width", locRectW).attr("height", locStep - 2)
-                .attr("fill", d => locationColor(d)).attr("stroke", "black")
+                .data(LOCATIONS).enter().append("path")
+                .attr("class", "locRect")
+                .attr("d", d => locationHexPath(locRectX, locY[d], locRectW, locStep - 2))
+                .attr("fill", d => locationColor(d))
+                .attr("stroke", theme.primaryText)
+                .attr("stroke-width", 1)
+                .attr("stroke-linejoin", "round")
                 .attr("id", d => "loc_box_" + d);
             interaction.bind(locationRects, "location");
 
@@ -351,17 +541,21 @@ function makeChapterFlow(coreData, chapters, articles) {
                 .attr("x", locLabelX).attr("y", d => locY[d] + locStep / 2)
                 .attr("text-anchor", "end")
                 .attr("id", d => "loc_text_" + d)
-                .text(d => d).style("fill", "black");
+                .text(d => d).style("fill", theme.primaryText);
 
             // ── Chapter column ────────────────────────────────────────────
 
             const chapterRects = chapterColumn.selectAll(".chapterRect")
                 .data(chapters).enter().append("rect")
+                .attr("class", "chapterRect")
                 .attr("x", chapRectX)
                 .attr("y", d => chapterToScreen(d.y))
                 .attr("height", d => chapterToScreen(d.topicCount) - headerHeight)
                 .attr("width", chapRectW)
-                .attr("fill", d => chapterColor[d.woaii_chapter]).attr("stroke", "black")
+                .attr("rx", 4).attr("ry", 4)
+                .attr("fill", d => chapterColor[d.woaii_chapter])
+                .attr("stroke", theme.primaryText)
+                .attr("stroke-width", 1)
                 .attr("id", d => "woaii_chapter_" + d.woaii_chapter);
             interaction.bind(chapterRects, "chapter");
 
@@ -370,16 +564,20 @@ function makeChapterFlow(coreData, chapters, articles) {
                 .attr("id", d => "chapter_annot_" + d.woaii_chapter)
                 .attr("x", chapLabelX)
                 .attr("y", d => chapterToScreen(d.y) + (chapterToScreen(d.topicCount) - headerHeight) / 2)
-                .text(d => d.woaii_chapter).style("fill", "black");
+                .text(d => d.woaii_chapter).style("fill", theme.primaryText);
 
             // ── Topic column ──────────────────────────────────────────────
 
             const topicRects = topicColumn.selectAll(".topicRect")
                 .data(uniqueTopics).enter().append("rect")
+                .attr("class", "topicRect")
                 .attr("x", topicRectX).attr("y", d => topicToScreen(topicLoc[d]))
                 .attr("width", topicRectW)
                 .attr("height", topicToScreen(topicHeight) - headerHeight)
-                .attr("fill", "lightblue").attr("stroke", "black")
+                .attr("rx", topicRectW / 2).attr("ry", topicRectW / 2)
+                .attr("fill", theme.selectedBackground)
+                .attr("stroke", theme.secondaryAccent)
+                .attr("stroke-width", 1)
                 .attr("id", d => "topic_box_" + d);
             interaction.bind(topicRects, "topic");
 
@@ -388,7 +586,7 @@ function makeChapterFlow(coreData, chapters, articles) {
                 .attr("x", topicLabelX)
                 .attr("y", d => topicToScreen(topicLoc[d] + topicHeight / 2))
                 .attr("id", d => "topic_text_" + d)
-                .text(d => d).style("fill", "black");
+                .text(d => d).style("fill", theme.primaryText);
 
             // ── Location → Chapter links ──────────────────────────────────
             // ID: "lc_<chapId>_<locName>" — chapId at [1], locName at slice(2)
@@ -407,7 +605,10 @@ function makeChapterFlow(coreData, chapters, articles) {
                     path.moveTo(leftX, leftY);
                     path.bezierCurveTo(midX, leftY, midX, rightY, rightX, rightY);
                     const link = lines.append("path")
-                        .attr("stroke", chapterColor[chapId]).attr("d", path)
+                        .attr("stroke", theme.mutedStroke)
+                        .attr("data-semantic-color", chapterColor[chapId])
+                        .style("opacity", defaultLinkOpacity)
+                        .attr("d", path)
                         .attr("id", "lc_" + chapId + "_" + locName)
                         .attr("data-link-type", "lc")
                         .attr("data-chapter", chapId)
@@ -437,7 +638,10 @@ function makeChapterFlow(coreData, chapters, articles) {
                     path.moveTo(leftX, leftY);
                     path.bezierCurveTo(midX, leftY, midX, rightY, rightX, rightY);
                     const link = lines.append("path")
-                        .attr("stroke", chapterColor[chapId]).attr("d", path)
+                        .attr("stroke", theme.mutedStroke)
+                        .attr("data-semantic-color", chapterColor[chapId])
+                        .style("opacity", defaultLinkOpacity)
+                        .attr("d", path)
                         .attr("id", "ct_" + chapId + "_" + topicName)
                         .attr("data-link-type", "ct")
                         .attr("data-chapter", chapId)
@@ -464,11 +668,14 @@ function makeChapterFlow(coreData, chapters, articles) {
             // Column headers
             const hdr = chapterSVG.append("g");
             hdr.append("text").attr("x", chapRectX).attr("y", 30)
-                .text("WOA II Chapter").style("font-size", "20px").style("font-weight", "bold");
+                .text("WOA II Chapter").attr("fill", theme.primaryText)
+                .style("font-size", "20px").style("font-weight", 650);
             hdr.append("text").attr("x", locRectX).attr("y", 30)
-                .text("Location").style("font-size", "20px").style("font-weight", "bold");
+                .text("Location").attr("fill", theme.primaryText)
+                .style("font-size", "20px").style("font-weight", 650);
             hdr.append("text").attr("x", topicRectX).attr("y", 30)
-                .text("OpenAlex Topic").style("font-size", "20px").style("font-weight", "bold");
+                .text("OpenAlex Topic").attr("fill", theme.primaryText)
+                .style("font-size", "20px").style("font-weight", 650);
 
             const interaction = makeInteractionController(
                 "B", locationColumn, chapterColumn, topicColumn, lines, tooltip
@@ -478,11 +685,15 @@ function makeChapterFlow(coreData, chapters, articles) {
 
             const chapterRects = chapterColumn.selectAll(".chapterRect")
                 .data(chapters).enter().append("rect")
+                .attr("class", "chapterRect")
                 .attr("x", chapRectX)
                 .attr("y", d => chapterToScreen(d.y))
                 .attr("height", d => chapterToScreen(d.topicCount) - headerHeight)
                 .attr("width", chapRectW)
-                .attr("fill", d => chapterColor[d.woaii_chapter]).attr("stroke", "black")
+                .attr("rx", 4).attr("ry", 4)
+                .attr("fill", d => chapterColor[d.woaii_chapter])
+                .attr("stroke", theme.primaryText)
+                .attr("stroke-width", 1)
                 .attr("id", d => "woaii_chapter_" + d.woaii_chapter);
             interaction.bind(chapterRects, "chapter");
 
@@ -491,15 +702,18 @@ function makeChapterFlow(coreData, chapters, articles) {
                 .attr("id", d => "chapter_annot_" + d.woaii_chapter)
                 .attr("x", chapLabelX).attr("text-anchor", "end")
                 .attr("y", d => chapterToScreen(d.y) + (chapterToScreen(d.topicCount) - headerHeight) / 2)
-                .text(d => d.woaii_chapter).style("fill", "black");
+                .text(d => d.woaii_chapter).style("fill", theme.primaryText);
 
             // ── Location column (middle) ──────────────────────────────────
 
             const locationRects = locationColumn.selectAll(".locRect")
-                .data(LOCATIONS).enter().append("rect")
-                .attr("x", locRectX).attr("y", d => locY[d])
-                .attr("width", locRectW).attr("height", locStep - 2)
-                .attr("fill", d => locationColor(d)).attr("stroke", "black")
+                .data(LOCATIONS).enter().append("path")
+                .attr("class", "locRect")
+                .attr("d", d => locationHexPath(locRectX, locY[d], locRectW, locStep - 2))
+                .attr("fill", d => locationColor(d))
+                .attr("stroke", theme.primaryText)
+                .attr("stroke-width", 1)
+                .attr("stroke-linejoin", "round")
                 .attr("id", d => "loc_box_" + d);
             interaction.bind(locationRects, "location");
 
@@ -507,16 +721,20 @@ function makeChapterFlow(coreData, chapters, articles) {
                 .data(LOCATIONS).enter().append("text")
                 .attr("x", locLabelX).attr("y", d => locY[d] + locStep / 2)
                 .attr("id", d => "loc_text_" + d)
-                .text(d => d).style("fill", "black");
+                .text(d => d).style("fill", theme.primaryText);
 
             // ── Topic column (right, unchanged) ───────────────────────────
 
             const topicRects = topicColumn.selectAll(".topicRect")
                 .data(uniqueTopics).enter().append("rect")
+                .attr("class", "topicRect")
                 .attr("x", topicRectX).attr("y", d => topicToScreen(topicLoc[d]))
                 .attr("width", topicRectW)
                 .attr("height", topicToScreen(topicHeight) - headerHeight)
-                .attr("fill", "lightblue").attr("stroke", "black")
+                .attr("rx", topicRectW / 2).attr("ry", topicRectW / 2)
+                .attr("fill", theme.selectedBackground)
+                .attr("stroke", theme.secondaryAccent)
+                .attr("stroke-width", 1)
                 .attr("id", d => "topic_box_" + d);
             interaction.bind(topicRects, "topic");
 
@@ -525,7 +743,7 @@ function makeChapterFlow(coreData, chapters, articles) {
                 .attr("x", topicLabelX)
                 .attr("y", d => topicToScreen(topicLoc[d] + topicHeight / 2))
                 .attr("id", d => "topic_text_" + d)
-                .text(d => d).style("fill", "black");
+                .text(d => d).style("fill", theme.primaryText);
 
             // ── Chapter → Location links ──────────────────────────────────
             // Same ID format as Mode A lc_ links; direction is reversed (left→right now chap→loc)
@@ -544,7 +762,10 @@ function makeChapterFlow(coreData, chapters, articles) {
                     path.moveTo(leftX, leftY);
                     path.bezierCurveTo(midX, leftY, midX, rightY, rightX, rightY);
                     const link = lines.append("path")
-                        .attr("stroke", chapterColor[chapId]).attr("d", path)
+                        .attr("stroke", theme.mutedStroke)
+                        .attr("data-semantic-color", chapterColor[chapId])
+                        .style("opacity", defaultLinkOpacity)
+                        .attr("d", path)
                         .attr("id", "lc_" + chapId + "_" + locName)
                         .attr("data-link-type", "lc")
                         .attr("data-chapter", chapId)
@@ -573,7 +794,10 @@ function makeChapterFlow(coreData, chapters, articles) {
                     path.moveTo(leftX, leftY);
                     path.bezierCurveTo(midX, leftY, midX, rightY, rightX, rightY);
                     lines.append("path")
-                        .attr("stroke", locationColor(locName)).attr("d", path)
+                        .attr("stroke", theme.mutedStroke)
+                        .attr("data-semantic-color", locationColor(locName))
+                        .style("opacity", defaultLinkOpacity)
+                        .attr("d", path)
                         .attr("id", "lt_" + locName + "_" + topicName)
                         .attr("data-link-type", "lt")
                         .attr("data-location", locName).attr("data-topic", topicName)
