@@ -8,3 +8,7 @@ Assuming you are on Windows, executing  the `launchServer.bat` file will start u
 
 # Requirements
 Python Version 3 is required to run the server. 
+
+
+# SpaCy Code
+The workspace has a virtual environment that allows you to run the SpaCy code. To do this, open up the jupyter notebook in VS code and switch to the virtual enviroment in the .venv folder. This will have all the dependices installed already. 
