@@ -257,3 +257,18 @@ li + li{
 #closeButton{
     float: right;
 }
+
+.ent {
+    padding: 1px 4px;
+    border-radius: 2px;
+}
+
+.ent-LOC {
+    background-color: #FAEEDA;
+    color: #412402;
+}
+
+.ent-GPE {
+    background-color: #E1F5EE;
+    color: #04342C;
+}

@@ -1,0 +1,14 @@
+{
+    "Arctic": ["Arctic", "the Arctic Ocean", "Arctic Ocean"],
+    "Antarctic": ["Antarctica", "Antarctic"],
+    "North Atlantic": ["North Atlantic", "the North Atlantic"],
+    "Atlantic": ["Atlantic", "the Atlantic Ocean", "Atlantic Ocean"],
+    "Pacific": ["Pacific", "Pacific Ocean", "the Pacific Ocean", "North Pacific", "the North Pacific"],
+    "Mediterranean": ["Mediterranean", "the Mediterranean Sea", "Mediterranean Sea"],
+    "Southern Ocean": ["Southern Ocean", "the Southern Ocean"],
+    "Indian Ocean": ["Indian Ocean", "the Indian Ocean"],
+    "Baltic Sea": ["Baltic Sea", "the Baltic Sea"],
+    "North Sea": ["North Sea", "the North Sea"],
+    "Caribbean": ["Caribbean"],
+    "Gulf of Mexico": ["Gulf of Mexico", "the Gulf of Mexico"]
+  }

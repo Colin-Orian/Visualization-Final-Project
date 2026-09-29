@@ -1,0 +1,418 @@
+{
+  "3": {
+    "Baltic Sea": 2,
+    "Caribbean": 1,
+    "Indian Ocean": 5,
+    "Pacific": 6,
+    "Atlantic": 4,
+    "Southern Ocean": 3,
+    "Arctic": 1,
+    "Antarctic": 3,
+    "North Atlantic": 1
+  },
+  "4": {
+    "Pacific": 1
+  },
+  "5": {
+    "Antarctic": 5,
+    "Atlantic": 21,
+    "North Atlantic": 10,
+    "Arctic": 9,
+    "Pacific": 22,
+    "Indian Ocean": 3,
+    "Southern Ocean": 10,
+    "Mediterranean": 1,
+    "Gulf of Mexico": 1
+  },
+  "6A": {
+    "Arctic": 14,
+    "Southern Ocean": 16,
+    "Atlantic": 11,
+    "Pacific": 16,
+    "North Atlantic": 14,
+    "Mediterranean": 1,
+    "North Sea": 5,
+    "Baltic Sea": 2,
+    "Indian Ocean": 1,
+    "Antarctic": 1
+  },
+  "6B": {
+    "Mediterranean": 1,
+    "North Atlantic": 1,
+    "Caribbean": 1,
+    "Arctic": 4,
+    "Pacific": 4,
+    "Atlantic": 3,
+    "North Sea": 1
+  },
+  "6C": {
+    "North Atlantic": 3,
+    "Baltic Sea": 2,
+    "Pacific": 2,
+    "North Sea": 1,
+    "Caribbean": 3,
+    "Atlantic": 1,
+    "Mediterranean": 2,
+    "Indian Ocean": 1,
+    "Southern Ocean": 1,
+    "Arctic": 1
+  },
+  "6D": {
+    "Arctic": 8,
+    "Southern Ocean": 2,
+    "North Atlantic": 4,
+    "Caribbean": 1,
+    "Atlantic": 2,
+    "Pacific": 1,
+    "Mediterranean": 1,
+    "Antarctic": 1
+  },
+  "6E": {
+    "Pacific": 4,
+    "Mediterranean": 2,
+    "Atlantic": 3,
+    "Gulf of Mexico": 3,
+    "Caribbean": 2,
+    "Indian Ocean": 2
+  },
+  "6F": {
+    "Southern Ocean": 5,
+    "North Sea": 3,
+    "Atlantic": 5,
+    "Indian Ocean": 3,
+    "North Atlantic": 2,
+    "Arctic": 1,
+    "Baltic Sea": 1,
+    "Mediterranean": 1,
+    "Pacific": 1
+  },
+  "6G": {
+    "North Sea": 1,
+    "Atlantic": 7,
+    "Mediterranean": 8,
+    "Indian Ocean": 1,
+    "Arctic": 1,
+    "Antarctic": 2,
+    "Southern Ocean": 1,
+    "Caribbean": 1,
+    "Pacific": 1,
+    "North Atlantic": 1
+  },
+  "7A": {
+    "North Sea": 1
+  },
+  "7B": {
+    "Mediterranean": 4,
+    "Atlantic": 3,
+    "Baltic Sea": 1,
+    "North Sea": 1,
+    "Pacific": 4,
+    "Gulf of Mexico": 1,
+    "Caribbean": 1,
+    "North Atlantic": 1,
+    "Antarctic": 1
+  },
+  "7C": {
+    "Pacific": 20,
+    "Caribbean": 1,
+    "Indian Ocean": 9,
+    "Atlantic": 3,
+    "Southern Ocean": 1
+  },
+  "7D": {
+    "Caribbean": 14,
+    "Gulf of Mexico": 1,
+    "Atlantic": 4,
+    "Mediterranean": 3,
+    "Indian Ocean": 1,
+    "Pacific": 2,
+    "North Atlantic": 1
+  },
+  "7E": {
+    "Antarctic": 2,
+    "Pacific": 4,
+    "Gulf of Mexico": 10,
+    "Atlantic": 7,
+    "Mediterranean": 3,
+    "Southern Ocean": 2,
+    "North Atlantic": 4,
+    "North Sea": 1,
+    "Indian Ocean": 1,
+    "Arctic": 1
+  },
+  "7F": {
+    "Caribbean": 1,
+    "Mediterranean": 2,
+    "Arctic": 1,
+    "Atlantic": 1
+  },
+  "7G": {
+    "Mediterranean": 4
+  },
+  "7H": {
+    "Indian Ocean": 1,
+    "Caribbean": 2,
+    "Gulf of Mexico": 3,
+    "Atlantic": 1
+  },
+  "7I": {
+    "Indian Ocean": 2,
+    "Atlantic": 3,
+    "Pacific": 2,
+    "Gulf of Mexico": 1,
+    "North Atlantic": 1,
+    "Caribbean": 1,
+    "Mediterranean": 1
+  },
+  "7J": {
+    "Atlantic": 16,
+    "Mediterranean": 21,
+    "North Atlantic": 7,
+    "Pacific": 15,
+    "Gulf of Mexico": 4,
+    "Antarctic": 1,
+    "Southern Ocean": 2,
+    "Baltic Sea": 1,
+    "Indian Ocean": 4,
+    "Arctic": 2
+  },
+  "7K": {
+    "Southern Ocean": 15,
+    "Arctic": 26,
+    "Atlantic": 2,
+    "Antarctic": 16,
+    "Pacific": 1
+  },
+  "7L": {
+    "Pacific": 10,
+    "Southern Ocean": 5,
+    "Mediterranean": 6,
+    "Atlantic": 12,
+    "Antarctic": 1,
+    "Arctic": 1,
+    "North Atlantic": 3,
+    "Gulf of Mexico": 1,
+    "Indian Ocean": 3
+  },
+  "7M": {
+    "Pacific": 25,
+    "Arctic": 10,
+    "Atlantic": 15,
+    "Southern Ocean": 7,
+    "North Atlantic": 11,
+    "Mediterranean": 4,
+    "Antarctic": 6,
+    "Indian Ocean": 1,
+    "Gulf of Mexico": 1,
+    "Caribbean": 1
+  },
+  "7N": {
+    "Baltic Sea": 1,
+    "North Atlantic": 6,
+    "Atlantic": 7,
+    "Southern Ocean": 3,
+    "Pacific": 8,
+    "Arctic": 2,
+    "Mediterranean": 1,
+    "Gulf of Mexico": 1,
+    "Caribbean": 2,
+    "Indian Ocean": 2
+  },
+  "7O": {
+    "Pacific": 10,
+    "Atlantic": 4,
+    "Mediterranean": 2,
+    "Southern Ocean": 2,
+    "Arctic": 1,
+    "North Atlantic": 2,
+    "Indian Ocean": 4,
+    "Caribbean": 1,
+    "Antarctic": 1
+  },
+  "7P": {
+    "Atlantic": 5,
+    "Mediterranean": 2,
+    "Arctic": 4,
+    "Southern Ocean": 6,
+    "Pacific": 8,
+    "Indian Ocean": 6,
+    "Gulf of Mexico": 3,
+    "Caribbean": 1,
+    "North Atlantic": 1,
+    "Antarctic": 1
+  },
+  "7Q": {
+    "Caribbean": 6,
+    "Atlantic": 8,
+    "North Atlantic": 7,
+    "Gulf of Mexico": 2,
+    "Mediterranean": 2,
+    "Arctic": 1,
+    "Pacific": 1
+  },
+  "8A": {
+    "Mediterranean": 2,
+    "Arctic": 1,
+    "Caribbean": 1,
+    "Antarctic": 1
+  },
+  "8B": {
+    "Mediterranean": 2,
+    "Pacific": 2,
+    "Atlantic": 1,
+    "Caribbean": 1,
+    "Gulf of Mexico": 1,
+    "North Sea": 1,
+    "North Atlantic": 1,
+    "Arctic": 1
+  },
+  "9": {
+    "Pacific": 12,
+    "Mediterranean": 4,
+    "Antarctic": 1,
+    "Atlantic": 8,
+    "Gulf of Mexico": 4,
+    "North Atlantic": 1,
+    "Southern Ocean": 1,
+    "Indian Ocean": 3,
+    "Baltic Sea": 2,
+    "Caribbean": 1
+  },
+  "10": {
+    "Indian Ocean": 3,
+    "Gulf of Mexico": 3,
+    "Baltic Sea": 9,
+    "North Sea": 7,
+    "Atlantic": 6,
+    "Caribbean": 2,
+    "North Atlantic": 3
+  },
+  "11": {
+    "Atlantic": 10,
+    "Pacific": 13,
+    "North Sea": 3,
+    "Gulf of Mexico": 1,
+    "Indian Ocean": 5,
+    "North Atlantic": 7,
+    "Arctic": 17,
+    "Antarctic": 2,
+    "Southern Ocean": 2,
+    "Baltic Sea": 7,
+    "Mediterranean": 7
+  },
+  "12": {
+    "Arctic": 7,
+    "Southern Ocean": 4,
+    "Atlantic": 4,
+    "Baltic Sea": 2,
+    "Antarctic": 3,
+    "Pacific": 6,
+    "North Atlantic": 4,
+    "Mediterranean": 5,
+    "North Sea": 3,
+    "Indian Ocean": 3
+  },
+  "13": {
+    "Pacific": 4,
+    "Atlantic": 1,
+    "Mediterranean": 3,
+    "North Sea": 1,
+    "Arctic": 2,
+    "Antarctic": 2,
+    "Caribbean": 2,
+    "Southern Ocean": 1,
+    "Indian Ocean": 1
+  },
+  "14": {
+    "Caribbean": 1
+  },
+  "15": {
+    "Arctic": 1,
+    "Atlantic": 4,
+    "Indian Ocean": 1,
+    "Pacific": 1,
+    "Mediterranean": 1,
+    "Baltic Sea": 1,
+    "Caribbean": 1
+  },
+  "16": {
+    "Pacific": 1,
+    "Atlantic": 1
+  },
+  "18": {
+    "Pacific": 4,
+    "Arctic": 1
+  },
+  "19": {
+    "Gulf of Mexico": 1,
+    "North Sea": 1
+  },
+  "20": {
+    "Mediterranean": 1,
+    "North Atlantic": 8,
+    "Atlantic": 4,
+    "Southern Ocean": 1,
+    "Arctic": 4,
+    "Indian Ocean": 3,
+    "Antarctic": 2,
+    "Caribbean": 1,
+    "Baltic Sea": 1,
+    "North Sea": 2,
+    "Pacific": 1,
+    "Gulf of Mexico": 1
+  },
+  "21": {
+    "North Atlantic": 1,
+    "Mediterranean": 2
+  },
+  "22": {
+    "Arctic": 3,
+    "Antarctic": 6,
+    "Southern Ocean": 5,
+    "Mediterranean": 9,
+    "Pacific": 11,
+    "Caribbean": 1,
+    "Atlantic": 7,
+    "North Sea": 1,
+    "North Atlantic": 1
+  },
+  "23": {
+    "Arctic": 1,
+    "Antarctic": 2,
+    "Southern Ocean": 1
+  },
+  "24": {
+    "Arctic": 6,
+    "Antarctic": 2,
+    "Pacific": 1,
+    "North Sea": 1,
+    "Atlantic": 2,
+    "Mediterranean": 1,
+    "North Atlantic": 1,
+    "Gulf of Mexico": 1
+  },
+  "25": {
+    "Arctic": 1,
+    "Pacific": 3,
+    "Atlantic": 3,
+    "North Sea": 14,
+    "Mediterranean": 9,
+    "Baltic Sea": 3,
+    "North Atlantic": 2
+  },
+  "26": {
+    "Atlantic": 1,
+    "North Sea": 1
+  },
+  "27": {
+    "Caribbean": 1,
+    "Mediterranean": 2,
+    "Arctic": 1,
+    "North Atlantic": 1,
+    "Southern Ocean": 1
+  },
+  "28": {
+    "North Sea": 1,
+    "Mediterranean": 1
+  }
+}

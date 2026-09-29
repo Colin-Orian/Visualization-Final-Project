@@ -1,0 +1,64 @@
+{
+  "generated_by": "validation-reporting/geographic-ner-report.mjs",
+  "methodology_note": "Read-only reporting over existing extraction artifacts. NER extraction, taxonomy aliases, case-insensitive exact alias matching, document-chapter deduplication, and visualization code are unchanged.",
+  "recall_note": "Recall is not estimated because undetected geographic references are not exhaustively annotated.",
+  "sampling": {
+    "algorithm": "Sort by mention_instance_id, then Mulberry32-seeded Fisher-Yates without replacement",
+    "sample_size_each": 100,
+    "ner_sample_seed": 20260821,
+    "canonical_sample_seed": 20260822,
+    "context_characters_per_side": 200
+  },
+  "statistics": {
+    "unique_works_in_openalexworks": 3446,
+    "works_with_abstracts": 3132,
+    "works_without_abstracts": 314,
+    "total_loc_gpe_mention_instances": 8890,
+    "loc_mention_instances": 4308,
+    "gpe_mention_instances": 4582,
+    "abstracts_with_at_least_one_loc_gpe_mention": 2159,
+    "abstracts_without_loc_gpe_mentions_among_abstracts": 973,
+    "distinct_case_sensitive_surface_forms": 2401,
+    "taxonomy_matched_mention_instances": 1955,
+    "unmatched_mention_instances": 6935,
+    "abstracts_with_at_least_one_taxonomy_match": 821,
+    "canonical_categories": 12,
+    "taxonomy_aliases": 29,
+    "chapter_work_associations": 3808,
+    "unique_work_ids_in_core_works": 3541,
+    "canonical_document_chapter_incidences": 1201,
+    "represented_chapters_with_canonical_incidences": 48
+  },
+  "population_investigation": {
+    "manuscript_stated_work_count": 3532,
+    "openalexworks_unique_ids": 3446,
+    "core_works_unique_ids": 3541,
+    "core_ids_absent_from_openalexworks": 95,
+    "openalexworks_ids_absent_from_core": 0,
+    "openalexworks_is_strict_subset_of_core_ids": true,
+    "exact_nonmissing_duplicate_title_groups": 8,
+    "duplicate_record_excess_across_those_groups": 9,
+    "core_record_count_after_exact_nonmissing_title_deduplication": 3532,
+    "missing_title_records_kept_separate": 6,
+    "title_deduplication_matches_manuscript_count": true,
+    "archived_core_rows": 3809,
+    "archived_core_unique_ids": 3542,
+    "current_core_rows": 3808,
+    "current_core_unique_ids": 3541,
+    "archived_ids_absent_from_current": [
+      "https://openalex.org/W4372171628"
+    ],
+    "current_ids_absent_from_archive": [],
+    "removed_row_recorded_id": "https://openalex.org/W4372171628",
+    "interpretation": "The 3,532 manuscript count is numerically consistent with exact-title deduplication of non-missing titles in the current 3,541-ID core file, while treating six NA-title IDs as separate records. This is evidence, not proof of the manuscript's original counting procedure, because no manuscript-level ID list is present locally."
+  },
+  "input_sha256": {
+    "works": "96bf786cafa05375ee630a4e538d8832c114fc012888ca170d44e8fab3011e60",
+    "entities": "5c30f550ec1ff3e526c3579566c6e6ce907796278df52415245e9a358ab7187c",
+    "taxonomy": "c598dbb07b1576b4282cac58b351c1aef1b27ad542f179f2e97b4f67f1ac6621",
+    "coreWorks": "cb90bf9ed08d7adf8291f94eb11bbc56ad83fc4df1d9da4653dd224431724bab",
+    "chapterLocations": "309a4505a32ada70a98993c2bddac79b157416b7a29f6ebb7e4546d324d2bd14",
+    "archivedCoreWorks": "03111830a075f4f4679dcb1c0a013d07d88ed8a94563bf4156c1c4ff24add3ad",
+    "removedRow": "9582283d5099a0188627e922afdc769b3f54fbc923711c633d694749e765e8f8"
+  }
+}
