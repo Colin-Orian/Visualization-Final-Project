@@ -291,7 +291,8 @@ function updateTimeGraph(startYear, endYear){
                 .append('text')
                 .text((d) => Math.trunc(d))
                 .attr("x", timeLineLeftCoord-30)
-                .attr("y", (d) => 300 - (yScale(d)))
+                // SVG text uses y as its baseline; lift the label clear of the tick line.
+                .attr("y", (d) => 300 - yScale(d) - 6)
 
 
     dynamicGraph.append("path")

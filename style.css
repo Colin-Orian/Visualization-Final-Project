@@ -1,274 +1,333 @@
+:root {
+    --page-background: #f4f2ef;
+    --panel-background: #fdfdfd;
+    --panel-header-background: #f6eee7;
+    --primary-text: #3f465a;
+    --secondary-text: #667085;
+    --border: #ded6cf;
+    --muted-link-stroke: #c6cdd3;
+    --primary-accent: #2f8f6b;
+    --secondary-accent: #ae9176;
+    --hover-background: #f6eee7;
+    --selected-background: #dff2ea;
+    --border-radius: 12px;
+    --subtle-shadow: 0 6px 18px rgba(63, 70, 90, 0.10);
+}
 
-#lineGraphContainer{
+html,
+body {
+    background-color: var(--page-background);
+    color: var(--primary-text);
+    font-family: "Segoe UI", Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    line-height: 1.45;
+}
+
+#lineGraphContainer {
     left: 1063px;
     top: 360px;
     position: absolute;
-    height: 350;
-    border: 2px;
-    background-color: #e4eff0;
-    border-color: black;
-    border-style: solid;
-    box-shadow: 4px 4px 4px #002439;
-    border-radius: 5px;
+    height: auto;
+    border: 1px solid var(--border);
+    background-color: var(--panel-background);
+    box-shadow: var(--subtle-shadow);
+    border-radius: var(--border-radius);
 }
 
-#body{
-    background-color: lightblue;
-}
-
-
-div#listContainer{
+div#listContainer {
     position: absolute;
     left: 1460px;
-    top: 0px;
+    top: 0;
     height: 350px;
     max-height: 350px;
-    border:2px;
-    background-color: #e4eff0;
-    border-color: black;
-    border-style: solid;
-    box-shadow: 4px 4px 4px #002439;
-    border-radius: 5px;
-    
+    border: 1px solid var(--border);
+    background-color: var(--panel-background);
+    box-shadow: var(--subtle-shadow);
+    border-radius: var(--border-radius);
 }
 
-#filterContainer{
+#filterContainer {
     position: absolute;
-    left: 0;   
+    left: 0;
     top: 0;
-    height: 1000;
-    width: 900;
-    background-color: #e4eff0;
-    border: 2px solid black;
-    box-shadow: 4px 4px 4px #002439;
-    border-radius: 5px;
-    
-    
+    height: auto;
+    width: auto;
+    background-color: var(--panel-background);
+    border: 1px solid var(--border);
+    box-shadow: var(--subtle-shadow);
+    border-radius: var(--border-radius);
 }
 
-h3{
-    padding-left: 10px;
-    
-    color: black;
-}
-#StatisticsContainer{
+#StatisticsContainer {
     position: absolute;
-    top: 0px;
+    top: 0;
     left: 1063px;
-    
     width: 390px;
     height: 350px;
-    border: 2px solid black;
-    box-shadow: 4px 4px 4px #002439;
-    border-radius: 5px;
-    background-color: #e4eff0;
+    border: 1px solid var(--border);
+    box-shadow: var(--subtle-shadow);
+    border-radius: var(--border-radius);
+    background-color: var(--panel-background);
 }
 
-.headerWrapper{
+h3 {
+    padding-left: 10px;
+    color: var(--primary-text);
+    font-size: 1.05rem;
+    font-weight: 650;
+    line-height: 1.25;
+    letter-spacing: 0.01em;
+}
+
+.headerWrapper {
     padding-top: 9px;
-    background-color: cadetblue;
-    box-shadow: 0 4px 2px -2px #002439;
-    
-    
+    background-color: var(--panel-header-background);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(63, 70, 90, 0.05);
 }
 
-.tagWrapper{
-    
-    width: fit-content;
-    border-radius: 10px;
-    display: flexbox;
+.headerSpacer,
+.headerSpacer-selected {
+    display: inline-block;
+    padding: 8px 16px 8px 10px;
+    border-radius: 999px;
+    color: var(--secondary-text);
+    cursor: pointer;
+    transition: background-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
 }
-/*https://stackoverflow.com/questions/8184958/add-space-between-html-elements-only-using-css*/
-.tag + .tag{
+
+.headerSpacer:hover {
+    background-color: var(--hover-background);
+    color: var(--primary-text);
+}
+
+.headerSpacer-selected {
+    background-color: var(--selected-background);
+    color: var(--primary-text);
+    box-shadow: inset 0 -2px 0 var(--primary-accent);
+}
+
+button,
+.button,
+#closeButton {
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease,
+        box-shadow 140ms ease, transform 140ms ease;
+}
+
+button {
+    border: 1px solid var(--border);
+    background: var(--panel-background);
+    color: var(--primary-text);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.button {
+    padding: 5px;
+}
+
+button:hover,
+.button:hover,
+#closeButton:hover {
+    background-color: var(--hover-background);
+    border-color: var(--secondary-accent);
+}
+
+button:active,
+.button:active,
+#closeButton:active {
+    transform: translateY(1px);
+}
+
+button:focus-visible,
+.button:focus-visible,
+.headerSpacer:focus-visible,
+.headerSpacer-selected:focus-visible,
+#closeButton:focus-visible,
+[tabindex]:focus-visible {
+    outline: 3px solid rgba(47, 143, 107, 0.34);
+    outline-offset: 2px;
+}
+
+.tagWrapper {
+    width: fit-content;
+    border-radius: 999px;
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.tag + .tag {
     margin-left: 5px;
 }
-.tag{
-    display: inline-block;
-    background-color: lightgray;
-    border-radius: 2px;
-    box-shadow: 2px 2px 2px;
-    padding: 2px;
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    color: var(--secondary-text);
+    background-color: #f5f2ee;
+    border: 1px solid #ebe4dd;
+    border-radius: 999px;
+    box-shadow: none;
+    padding: 2px 7px;
+    font-size: 0.82rem;
 }
 
-.tag > img{
+.tag > img {
     float: left;
 }
 
-.tag > div{
+.tag > div {
     float: right;
 }
 
-.networkSvg{
+.networkSvg {
     width: 900px;
     height: 390px;
-    
 }
-.networkButton{
+
+.networkButton {
     float: right;
     position: relative;
-    display: flexbox;
 }
-.networkTitle{
+
+.networkTitle {
     float: left;
     position: relative;
-    display: flexbox;
 }
 
-
-.headerSpacer{
-    display: inline-block;
-    border-radius: 3px;
-    cursor: pointer;
-    
-}
-
-
-.headerSpacer:hover{
-    background-color: aquamarine;
-    border-radius: 3px;
-}
-
-.headerSpacer-selected{
-    display: inline-block;
-    background-color: lightblue;
-    border-radius: 3px;
-    
-}
-.button{
-    padding-left: 5px;
-    cursor: pointer;
-    position: center;
-    
-}
-
-.button:hover{
-    background-color: aquamarine;
-    border-radius: 5px;
-}
-
-
-
-ul{
+ul {
     overflow-y: auto;
     overflow-x: hidden;
     width: 500px;
     height: 350px;
     max-height: 250px;
-    margin: 0px, 0px, 0px, 0px;
-    background-color: #e4eff0;
-    list-style-type:none;
-    padding: 4px;
-    
+    margin: 0;
+    background-color: var(--panel-background);
+    list-style-type: none;
+    padding: 8px;
 }
 
-li{
-    border: 1px solid black;
-    box-shadow: 5px 5px 5px;
+li {
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(63, 70, 90, 0.07);
     border-radius: 10px;
-    background-color: azure;
-    margin-left: 0px;
+    background-color: #ffffff;
+    margin-left: 0;
+    padding: 8px;
 }
 
-/*https://stackoverflow.com/questions/19254411/how-do-i-set-vertical-space-between-list-items*/
-li + li{
+li + li {
     margin-top: 10px;
 }
 
-.articleWrapper{
+.articleWrapper {
     display: flex;
-    
+    gap: 8px;
 }
 
-.articleTitle{
-    /*display: inline-block;*/
+.articleTitle {
     position: relative;
-    font-weight: bolder;
-    
+    color: var(--primary-text);
+    font-weight: 650;
 }
 
-.yearInfo{
-    /*display: inline-block;*/
-    position:relative;
+.yearInfo {
+    position: relative;
+    color: var(--secondary-text);
+    font-size: 0.9rem;
     font-style: italic;
 }
 
-.score{
-    
-    /*display: inline-block;*/
-    font-weight: bolder;
-    outline: 1px navy;
-    background: lightblue;
+.score {
+    font-weight: 650;
+    color: var(--primary-text);
+    background: var(--selected-background);
     box-sizing: border-box;
+    border: 1px solid rgba(47, 143, 107, 0.22);
     border-radius: 10px;
-    box-shadow: 0px 0px 0px;
-    border: 5px red;
+    box-shadow: none;
     min-width: 40px;
     min-height: 40px;
     max-width: 40px;
-    
     text-align: center;
-    
 }
 
-
-
-.modal{
+.modal {
     position: fixed;
     z-index: 1;
-    left: 0px;
+    left: 0;
     top: 0;
     padding-top: 100px;
     display: none;
     width: 100%;
     height: 100%;
-    background-color: rgb(0, 0, 0);
-    background-color: rgb(0, 0, 0, 0.4);
+    background-color: rgba(31, 36, 48, 0.38);
     opacity: 0;
 }
 
-#modalContent{
+#modalContent {
     position: relative;
     margin: auto;
-    color: black;
-    
+    color: var(--primary-text);
     width: 80%;
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius);
+    box-shadow: 0 16px 40px rgba(31, 36, 48, 0.18);
+    overflow: hidden;
 }
 
-#modalHeader{
-    font-size: large;
-    font-style: bold;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+#modalHeader {
+    font-size: 1.125rem;
+    font-weight: 650;
+    padding: 10px 16px;
+    background-color: var(--panel-header-background);
+    border-bottom: 1px solid var(--border);
+}
 
-    padding: 2px 16px;
-    background-color: cadetblue;
+#modalBody {
+    background-color: var(--panel-background);
+    border: 0;
+    padding: 14px 16px;
 }
-#modalBody{
-    background-color: azure;
-    border: 1px;
-    padding: 2px 16px;
-    border-color: lightblue;
+
+#modalFooter {
+    background-color: var(--panel-header-background);
+    border-top: 1px solid var(--border);
+    padding: 8px 16px;
 }
-#modalFooter{
-    background-color: cadetblue;
-    border-bottom-right-radius: 10px;
-    border-bottom-left-radius: 10px;
-}
-#closeButton{
+
+#closeButton {
     float: right;
+    color: var(--secondary-text);
+    padding: 1px 8px;
+}
+
+a {
+    color: var(--primary-accent);
+    text-decoration-color: rgba(47, 143, 107, 0.4);
+    text-underline-offset: 2px;
+}
+
+a:hover {
+    color: #246f54;
 }
 
 .ent {
     padding: 1px 4px;
-    border-radius: 2px;
+    border-radius: 3px;
 }
 
 .ent-LOC {
-    background-color: #FAEEDA;
-    color: #412402;
+    background-color: #f6e8d8;
+    color: #6b4423;
 }
 
 .ent-GPE {
-    background-color: #E1F5EE;
-    color: #04342C;
+    background-color: #dff2ea;
+    color: #1f5d49;
 }

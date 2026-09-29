@@ -63,8 +63,9 @@ function makeChapterTimeline(coreData, chapters){
                 .enter()
                 .append("text")
                 .attr("x", timeLineLeftCoord-30)
+                // SVG text uses y as its baseline; lift the label clear of the tick line.
                 .attr("y", d=>{
-                    return d
+                    return d - 6
                 })
                 .text(d =>{
                     return Math.floor(screenToCount(d))
